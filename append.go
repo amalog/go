@@ -51,7 +51,7 @@ func append3_iii_b_semidet(Front,Back,Whole term.Term) (success bool) {
 		}
 		
 		// append(RestFront,Back,RestWhole)
-		if !append3_iii_semidet(RestFront,Back,RestWhole) {  // call the predicate, not the clause
+		if !append3_iii_semidet(RestFront,Back,RestWhole) {  // call the predicate, not a clause
 			break
 		}
 		success = true
