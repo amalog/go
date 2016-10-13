@@ -23,18 +23,11 @@ func succ2(X, Y term.Term) Goal {
 }
 
 func (self *Succ2) Next() (bool, bool) {
-	gx := term.Ground(self.X)
-	gy := term.Ground(self.Y)
-	if gx && gy {
-		x := self.X.AsBigRat()
-		y := self.Y.AsBigRat()
-		z := new(big.Rat).Sub(y,x)
-		return z.Cmp(one) == 0, false
-	} else if gx {
+	if term.IsGround(self.X) {
 		x := self.X.AsBigRat()
 		y := new(big.Rat).Add(x,one)
 		return Unify(self.Y,term.FromBigRat(y))
-	} else if gy {
+	} else if term.IsGround(self.Y) {
 		y := self.Y.AsBigRat()
 		x := new(big.Rat).Sub(y,one)
 		return Unify(self.X,term.FromBigRat(x))
