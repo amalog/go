@@ -17,25 +17,32 @@ import (
 
 var one = big.NewRat(1,1)
 
-func succ2_ii_a_semidet(X, Y term.Term) bool {
-	x := X.AsBigRat()
-	y := Y.AsBigRat()
-	z := new(big.Rat).Sub(y,x)
-	return z.Cmp(one) == 0
+// succ/2 is a built-in predicate
+type Succ2 struct {
+	X, Y term.Term	
 }
 
-func succ2_io_a_det(X term.Term, Y term.Variable) {
-	x := X.AsBigRat()
-	y := new(big.Rat).Add(x,one)
-	if !Unify(Y,term.FromBigRat(y)) {
-		panic("mode error: Y should have been an unbound variable")
-	}
+func succ2(X, Y term.Term) Goal {
+	return &Succ2{X,Y}
 }
 
-func succ2_oi_a_det(X term.Variable, Y term.Term) {
-	y := Y.AsBigRat()
-	x := new(big.Rat).Sub(y,one)
-	if !Unify(X,term.FromBigRat(x)) {
-		panic("mode error: X should have been an unbound variable")
+func (self *Succ2) Next() (bool, bool) {
+	gx := term.Ground(self.X)
+	gy := term.Ground(self.Y)
+	if gx && gy {
+		x := self.X.AsBigRat()
+		y := self.Y.AsBigRat()
+		z := new(big.Rat).Sub(y,x)
+		return z.Cmp(one) == 0, false
+	} else if gx {
+		x := self.X.AsBigRat()
+		y := new(big.Rat).Add(x,one)
+		return Unify(self.Y,term.FromBigRat(y))
+	} else if gy {
+		y := self.Y.AsBigRat()
+		x := new(big.Rat).Sub(y,one)
+		return Unify(self.X,term.FromBigRat(x))
+	} else {
+		panic("mode error: X or Y should have been ground")
 	}
 }

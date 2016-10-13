@@ -36,9 +36,9 @@ func append3_a(Front, Back, Whole term.Term) Goal {
 func append3_b(Front, Back, Whole term.Term) Goal {
 	var A, B, RestFront, RestWhole, X term.Variable
 	return conjunction(
-		cons3(X,RestFront,A),  // shallow goal can be inlined
+		cons3(X,RestFront,A),
 		unify(Front,A),
-		cons3(X,RestWhole,B),  // shallow goal can be inlined
+		cons3(X,RestWhole,B),
 		unify(Whole,B),
 		append3(RestFront,Back,RestWhole),
 	)
