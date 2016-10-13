@@ -21,9 +21,11 @@ append(Front,Back,Whole) :-
 
 var empty = term.NewAtom("[]")
 
+type PredicateId int
+
 // a constant for each known predicate
 const (
-	predAppend3 = iota
+	predAppend3 PredicateId = iota
 )
 
 func append3_a(Front, Back, Whole term.Term) Goal {
