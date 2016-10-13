@@ -35,3 +35,5 @@ func (self *Succ2) Next() (bool, bool) {
 		panic("mode error: X or Y should have been ground")
 	}
 }
+
+func (*Succ2) Cleanup() {}
