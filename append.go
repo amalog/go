@@ -21,44 +21,32 @@ append(Front,Back,Whole) :-
 
 var empty = term.NewAtom("[]")
 
-func append3_iii_a_semidet(Front,Back,Whole term.Term) (success bool) {
-	for {
-		if !Unify(Front,empty) {
-			break
-		}
-		if !Unify(Back,Whole) {
-			break
-		}
-		success = true
-	}
-	if !success {
-		Unwind(Front)
-		Unwind(Back)
-		Unwind(Whole)
-	}
+// a constant for each known predicate
+const (
+	predAppend3 = iota
+)
+
+func append3_a(Front, Back, Whole term.Term) Goal {
+	return conjunction(
+		unify(Front,empty),
+		unify(Back,Whole),
+	)
 }
 
-func append3_iii_b_semidet(Front,Back,Whole term.Term) (success bool) {
+func append3_b(Front, Back, Whole term.Term) Goal {
 	var A, B, RestFront, RestWhole, X term.Variable
-	for {
-		cons3_ooo_a_det(X,RestFront,A)  // det func has no return value
-		if !Unify(Front,A) {
-			break
-		}
-		cons3_ooo_a_det(X,RestWhole,B)  // det func has no return value
-		if !Unify(Whole,B) {
-			break
-		}
-		
-		// append(RestFront,Back,RestWhole)
-		if !append3_iii_semidet(RestFront,Back,RestWhole) {  // call the predicate, not a clause
-			break
-		}
-		success = true
-	}
-	if !success {
-		Unwind(Front)
-		Unwind(Back)
-		Unwind(Whole)
+	return conjunction(
+		cons3(X,RestFront,A),  // shallow goal can be inlined
+		unify(Front,A),
+		cons3(X,RestWhole,B),  // shallow goal can be inlined
+		unify(Whole,B),
+		append3(RestFront,Back,RestWhole),
+	)
+}
+
+func append3(Front, Back, Whole term.Term) Goal {
+	return &PredicateGoal{
+		Predicate: predAppend3,
+		Args: []term.Term{Front, Back, Whole}
 	}
 }
