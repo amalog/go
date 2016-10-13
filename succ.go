@@ -5,10 +5,6 @@
 %% succ(-,+) is det.
 succ(X,Y) :-
 	Y #= X + 1.
-
-In the function names below, "i" represents an input argument
-and "o" represents an output argument.  "a", "b", etc indicate
-which clause is being compiled.
 */
 
 import (
