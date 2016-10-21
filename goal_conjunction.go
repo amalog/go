@@ -20,6 +20,7 @@ func (self *GoalConjunction) Next(c Context) (bool, bool) {
 		self.choicepoints = self.choicepoints[0 : len(choicepoints)-1]
 		goalIndex = p.index
 		c.Trail().BacktrackTo(p.barrier)
+		c.Trail().DropBarrier(p.barrier)
 	}
 
 	for goalIndex < len(self.Goals) {
