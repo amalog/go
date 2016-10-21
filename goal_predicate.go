@@ -1,26 +1,24 @@
 type PredicateGoal struct {
 	Predicate PredicateId
-	Args []term.Term
-	
+	Args      []term.Term
+
 	clauseIndex int
-	clauses []Goal
+	clauses     []Goal
 }
 
-func (self *PredicateGoal) Next() (bool,bool) {
+func (self *PredicateGoal) Next(c Context) (bool, bool) {
 	if self.clauses == nil {
 		self.clauses = lookupClauses(self.Predicate, self.Args)
 	}
 
 	// look for solutions from each clause in turn
 	for {
-		// TODO backtracking
-
 		if clauseIndex >= len(self.clauses) {
 			// already investigated all clauses
-			return false, false 
+			return false, false
 		}
 		clause := self.clauses[self.clauseIndex]
-		ok, more := clause.Next()
+		ok, more := clause.Next(c)
 		if ok {
 			if more {
 				return true, true
