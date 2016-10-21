@@ -17,20 +17,26 @@ func (self *PredicateGoal) Next(c Context) (bool, bool) {
 			// already investigated all clauses
 			return false, false
 		}
+
 		clause := self.clauses[self.clauseIndex]
 		ok, more := clause.Next(c)
 		if ok {
 			if more {
 				return true, true
-			} else {
-				self.clauseIndex++
-				return true, self.clauseIndex < len(self.clauses)
 			}
+
+			if x, ok := clause.(NeedsCleanup); ok {
+				x.Cleanup()
+			}
+			self.clauseIndex++
+			return true, self.clauseIndex < len(self.clauses)
 		} else {
+			if x, ok := clause.(NeedsCleanup); ok {
+				x.Cleanup()
+			}
+
 			// look for solutions in the next clause
 			self.clauseIndex++
 		}
 	}
 }
-
-func (*PredicateGoal) Cleanup() {}

@@ -3,7 +3,10 @@ type GoalConjunction {
 }
 
 func conjunction(goals ...Goal) Goal {
-	// TODO
+	return &GoalConjunction{goals}
 }
 
-// TODO implement Goal interface
+func (self *GoalConjunction) Next(c Context) (bool,bool) {
+	// TODO
+	return false, false
+}
