@@ -1,3 +1,5 @@
+package prolog
+
 /*
 %% append(list,list,list)
 %% append(+,+,+) is semidet.
@@ -19,7 +21,7 @@ append(Front,Back,Whole) :-
 	append(RestFront,Back,RestWhole).
 */
 
-var empty = term.NewAtom("[]")
+var empty = NewAtom("[]")
 
 type PredicateId int
 
@@ -28,27 +30,27 @@ const (
 	predAppend3 PredicateId = iota
 )
 
-func append3_a(Front, Back, Whole term.Term) Goal {
+func append3_a(Front, Back, Whole Term) Goal {
 	return conjunction(
-		unify(Front,empty),
-		unify(Back,Whole),
+		unify(Front, empty),
+		unify(Back, Whole),
 	)
 }
 
-func append3_b(Front, Back, Whole term.Term) Goal {
-	var A, B, RestFront, RestWhole, X term.Variable
+func append3_b(Front, Back, Whole Term) Goal {
+	var A, B, RestFront, RestWhole, X Variable
 	return conjunction(
-		cons3(X,RestFront,A),
-		unify(Front,A),
-		cons3(X,RestWhole,B),
-		unify(Whole,B),
-		append3(RestFront,Back,RestWhole),
+		cons3(X, RestFront, A),
+		unify(Front, A),
+		cons3(X, RestWhole, B),
+		unify(Whole, B),
+		append3(RestFront, Back, RestWhole),
 	)
 }
 
-func append3(Front, Back, Whole term.Term) Goal {
+func append3(Front, Back, Whole Term) Goal {
 	return &PredicateGoal{
 		Predicate: predAppend3,
-		Args: []term.Term{Front, Back, Whole}
+		Args:      []Term{Front, Back, Whole},
 	}
 }

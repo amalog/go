@@ -1,3 +1,5 @@
+package prolog
+
 // Goal describes any computation which produces solutions.
 type Goal interface {
 	// Next returns true for the first value if it succeeds in producing a solution.

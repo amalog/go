@@ -1,6 +1,8 @@
+package prolog
+
 type PredicateGoal struct {
 	Predicate PredicateId
-	Args      []term.Term
+	Args      []Term
 
 	clauseIndex int
 	clauses     []Goal
@@ -13,7 +15,7 @@ func (self *PredicateGoal) Next(c Context) (bool, bool) {
 
 	// look for solutions from each clause in turn
 	for {
-		if clauseIndex >= len(self.clauses) {
+		if self.clauseIndex >= len(self.clauses) {
 			// already investigated all clauses
 			return false, false
 		}
@@ -39,4 +41,8 @@ func (self *PredicateGoal) Next(c Context) (bool, bool) {
 			self.clauseIndex++
 		}
 	}
+}
+
+func lookupClauses(id PredicateId, args []Term) []Goal {
+	return nil
 }
