@@ -326,6 +326,7 @@ func (s *Scanner) scanNumber() (*Token, error) {
 		}
 		return t, nil
 	default:
+		s.back()
 		t := &Token{
 			Class:    Num,
 			Position: x.Position,
@@ -345,7 +346,7 @@ CH:
 		switch {
 		case ch >= '0' && ch <= '9', ch == '_':
 			chars = append(chars, ch)
-		case ch == '(', ch == ')', ch == ',', ch == '.':
+		case ch == '(', ch == ')', ch == ',', ch == '.', ch == ' ':
 			s.back()
 			break CH
 		case ch == EOF:
@@ -353,7 +354,7 @@ CH:
 		default:
 			err := &SyntaxError{
 				Position: s.pos(),
-				Message:  fmt.Sprintf("Unexpected number character: %c", ch),
+				Message:  fmt.Sprintf("Unexpected number character: '%c'", ch),
 			}
 			return nil, err
 		}
