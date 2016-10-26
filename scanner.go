@@ -326,7 +326,6 @@ func (s *Scanner) scanNumber() (*Token, error) {
 		}
 		return t, nil
 	default:
-		s.back()
 		t := &Token{
 			Class:    Num,
 			Position: x.Position,

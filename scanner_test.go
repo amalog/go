@@ -17,6 +17,7 @@ func TestScanner(t *testing.T) {
 		"main :-\n    hello.": `[atom(main) neck atom(hello) punct(.)]`,
 		"123 hi":              `[num(123) atom(hi)]`,
 		"123.4 bye":           `[num(123.4) atom(bye)]`,
+		"9_876":               `[num(9_876)]`,
 	}
 	for prolog, expected := range tests {
 		ts, err := tokens(prolog)
