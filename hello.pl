@@ -2,11 +2,9 @@ main :-
     format("Hello, world!~n").
 
 /*
-use! {
-    io("amalog.org/std/io");
-}
+use!("amalog.org/std/io", Io);
 
 main(W) {
-    io.printf(W, "Hello, world!\n");
+    Io.printf(W, "Hello, world!\n");
 }
 */
