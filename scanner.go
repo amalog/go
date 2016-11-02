@@ -13,6 +13,8 @@ const (
 	Num   Class = iota
 	Punct Class = iota
 	Var   Class = iota
+
+	String Class = iota
 )
 
 const EOF rune = -1
@@ -56,6 +58,8 @@ func (t *Token) String() string {
 		return fmt.Sprintf("num(%s)", t.Text)
 	case Punct:
 		return fmt.Sprintf("punct(%s)", t.Text)
+	case String:
+		return fmt.Sprintf("string(%s)", t.Text)
 	case Var:
 		return fmt.Sprintf("var(%s)", t.Text)
 	default:
@@ -101,6 +105,8 @@ func (s *Scanner) Scan() (*Token, error) {
 			return s.scanVariable()
 		} else if ch >= '0' && ch <= '9' { // number
 			return s.scanNumber()
+		} else if ch == '"' { // string
+			return s.scanString()
 		} else if ch == ':' { // neck
 			return s.scanNeck()
 		} else if ch == ' ' || ch == '\n' { // white space
@@ -363,6 +369,34 @@ CH:
 
 	t := &Token{
 		Class:    Num, // not really
+		Position: pos,
+		Text:     string(chars),
+	}
+	return t, nil
+}
+
+func (s *Scanner) scanString() (*Token, error) {
+	chars := make([]rune, 0)
+
+	// consume opening quote character
+	ch := s.next()
+	if ch != '"' {
+		panic("scanString without a double quote character to start")
+	}
+	chars = append(chars, ch)
+
+	ch = s.next()
+	pos := s.pos()
+	for {
+		chars = append(chars, ch)
+		if ch == '"' {
+			break
+		}
+		ch = s.next()
+	}
+
+	t := &Token{
+		Class:    String,
 		Position: pos,
 		Text:     string(chars),
 	}

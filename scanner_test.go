@@ -15,9 +15,14 @@ func TestScanner(t *testing.T) {
 		`FooBar`: `[var(FooBar)]`,
 
 		"main :-\n    hello.": `[atom(main) neck atom(hello) punct(.)]`,
-		"123 hi":              `[num(123) atom(hi)]`,
-		"123.4 bye":           `[num(123.4) atom(bye)]`,
-		"9_876":               `[num(9_876)]`,
+
+		"123 hi":    `[num(123) atom(hi)]`,
+		"123.4 bye": `[num(123.4) atom(bye)]`,
+		"9_876":     `[num(9_876)]`,
+
+		`"hello world\n"`: `[string("hello world\n")]`,
+
+		`use("amalog.org/std/io", Io);`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct()) punct(;)]`,
 	}
 	for prolog, expected := range tests {
 		ts, err := tokens(prolog)
