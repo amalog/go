@@ -8,18 +8,13 @@ type Term interface {
 type Variable interface {
 }
 
-type Number interface {
-	AsBigRat() *big.Rat
-}
+type Number *big.Rat
 
-type Atom interface {
-}
+type Atom string
 
-type Seq interface {
-}
+type Seq []Term
 
-type Database interface {
-}
+type Database []Term
 
 type Struct struct {
 	Context Variable
