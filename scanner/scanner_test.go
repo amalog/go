@@ -1,4 +1,4 @@
-package prolog
+package scanner // import "github.com/amalog/go/scanner"
 
 import (
 	"fmt"
@@ -45,7 +45,7 @@ func TestScanner(t *testing.T) {
 func tokens(text string) ([]*Token, error) {
 	ts := make([]*Token, 0)
 
-	s := NewScanner(strings.NewReader(text))
+	s := New(strings.NewReader(text))
 	for {
 		t, err := s.Scan()
 		if err == io.EOF {

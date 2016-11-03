@@ -1,4 +1,4 @@
-package prolog
+package scanner // import "github.com/amalog/go/scanner"
 
 import (
 	"fmt"
@@ -79,7 +79,7 @@ type Scanner struct {
 	prevColumn int // before calling next()
 }
 
-func NewScanner(r io.RuneScanner) *Scanner {
+func New(r io.RuneScanner) *Scanner {
 	s := &Scanner{
 		r:      r,
 		line:   1,

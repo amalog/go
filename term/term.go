@@ -1,4 +1,4 @@
-package prolog
+package term // import "github.com/amalog/go/term"
 
 import "math/big"
 
@@ -10,6 +10,22 @@ type Variable interface {
 
 type Number interface {
 	AsBigRat() *big.Rat
+}
+
+type Atom interface {
+}
+
+type Seq interface {
+}
+
+type Database interface {
+}
+
+type Struct struct {
+	Context Variable
+	Name    Atom
+	Args    Seq
+	Data    Database
 }
 
 func NewAtom(s string) Term {
