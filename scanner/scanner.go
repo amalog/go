@@ -107,8 +107,6 @@ func (s *Scanner) Scan() (*Token, error) {
 			return s.scanNumber()
 		} else if ch == '"' { // string
 			return s.scanString()
-		} else if ch == ':' { // neck
-			return s.scanNeck()
 		} else if ch == ' ' || ch == '\n' { // white space
 			s.skipSpace()
 			continue
@@ -218,17 +216,11 @@ CH:
 		switch {
 		case ch >= 'a' && ch <= 'z', ch == '_':
 			chars = append(chars, ch)
-		case ch == '(', ch == ')', ch == ',', ch == '.', ch == ' ':
-			s.back()
-			break CH
 		case ch == EOF:
 			break CH
 		default:
-			err := &SyntaxError{
-				Position: s.pos(),
-				Message:  fmt.Sprintf("Unexpected atom character: %c", ch),
-			}
-			return nil, err
+			s.back()
+			break CH
 		}
 
 		ch = s.next()
@@ -240,28 +232,6 @@ CH:
 		Text:     string(chars),
 	}
 	return t, nil
-}
-
-func (s *Scanner) scanNeck() (*Token, error) {
-	pos := s.pos()
-	ch := s.next()
-	if ch == ':' {
-		ch = s.next()
-		if ch == '-' {
-			t := &Token{
-				Class:    Neck,
-				Position: pos,
-				Text:     ":-",
-			}
-			return t, nil
-		}
-	}
-
-	err := &SyntaxError{
-		Position: pos,
-		Message:  "Expected neck (:-)",
-	}
-	return nil, err
 }
 
 func (s *Scanner) scanVariable() (*Token, error) {
@@ -289,17 +259,11 @@ CH:
 				panic("called scanVariable without upper case letter next in stream")
 			}
 			chars = append(chars, ch)
-		case ch == '(', ch == ')', ch == ',', ch == '.':
-			s.back()
-			break CH
 		case ch == EOF:
 			break CH
 		default:
-			err := &SyntaxError{
-				Position: s.pos(),
-				Message:  fmt.Sprintf("Unexpected variable character: %c", ch),
-			}
-			return nil, err
+			s.back()
+			break CH
 		}
 
 		ch = s.next()

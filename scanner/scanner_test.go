@@ -10,12 +10,11 @@ import (
 func TestScanner(t *testing.T) {
 	tests := map[string]string{
 		`hello.`: `[atom(hello) punct(.)]`,
+		`hello;`: `[atom(hello) punct(;)]`,
 		`3.141.`: `[num(3.141) punct(.)]`,
 		`X`:      `[var(X)]`,
 		`FooBar`: `[var(FooBar)]`,
 		`}`:      `[punct(})]`,
-
-		"main :-\n    hello.": `[atom(main) neck atom(hello) punct(.)]`,
 
 		"123 hi":    `[num(123) atom(hi)]`,
 		"123.4 bye": `[num(123.4) atom(bye)]`,
