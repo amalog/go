@@ -3,28 +3,21 @@ package term // import "github.com/amalog/go/term"
 import "math/big"
 
 type Term interface {
-}
-
-type Variable interface {
+	// String produces the canonical representation of this Amalog term.
+	String() string
 }
 
 type Number *big.Rat
-
-type Atom string
 
 type Seq []Term
 
 type Database []Term
 
 type Struct struct {
-	Context Variable
+	Context Var
 	Name    Atom
 	Args    Seq
 	Data    Database
-}
-
-func NewAtom(s string) Term {
-	return nil
 }
 
 func IsGround(t Term) bool {
