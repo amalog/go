@@ -6,6 +6,9 @@ import (
 	"github.com/amalog/go/scanner"
 )
 
+// central definition of the term terminator
+const terminator = ";"
+
 type Reader struct {
 	s *scanner.Scanner
 }
@@ -32,7 +35,7 @@ func (r *Reader) Read() (Term, error) {
 		switch y.Class {
 		case scanner.Punct:
 			switch y.Text {
-			case ";":
+			case terminator:
 				return NewAtom(x.Text), nil
 			case "(":
 				args, err := r.readSeq() // consumes closing ')'
@@ -48,7 +51,7 @@ func (r *Reader) Read() (Term, error) {
 				switch z.Class {
 				case scanner.Punct:
 					switch z.Text {
-					case ";":
+					case terminator:
 						t := &Struct{
 							Name: NewAtom(x.Text),
 							Args: NewSeq(args),
@@ -79,7 +82,7 @@ func (r *Reader) Read() (Term, error) {
 
 		switch y.Class {
 		case scanner.Punct:
-			if y.Text == ";" {
+			if y.Text == terminator {
 				return NewString(text), nil
 			}
 		}
@@ -92,7 +95,7 @@ func (r *Reader) Read() (Term, error) {
 
 		switch y.Class {
 		case scanner.Punct:
-			if y.Text == ";" {
+			if y.Text == terminator {
 				term := &Var{
 					Name:  x.Text,
 					Value: nil,
