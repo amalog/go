@@ -10,7 +10,7 @@ import (
 func TestScanner(t *testing.T) {
 	tests := map[string]string{
 		`hello.`: `[atom(hello) punct(.)]`,
-		`hello;`: `[atom(hello) punct(;)]`,
+		`hello,`: `[atom(hello) punct(,)]`,
 		`3.141.`: `[num(3.141) punct(.)]`,
 		`X`:      `[var(X)]`,
 		`FooBar`: `[var(FooBar)]`,
@@ -22,11 +22,11 @@ func TestScanner(t *testing.T) {
 
 		`"hello world\n"`: `[string("hello world\n")]`,
 
-		`use("amalog.org/std/io", Io);`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct()) punct(;)]`,
+		`use("amalog.org/std/io", Io),`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct()) punct(,)]`,
 
 		`main(W) {`: `[atom(main) punct(() var(W) punct()) punct({)]`,
 
-		`Io.printf(W, "Hello, world!\n");`: `[var(Io) punct(.) atom(printf) punct(() var(W) punct(,) string("Hello, world!\n") punct()) punct(;)]`,
+		`Io.printf(W, "Hello, world!\n"),`: `[var(Io) punct(.) atom(printf) punct(() var(W) punct(,) string("Hello, world!\n") punct()) punct(,)]`,
 	}
 	for prolog, expected := range tests {
 		ts, err := tokens(prolog)
