@@ -7,7 +7,7 @@ import (
 )
 
 // central definition of the term terminator
-const terminator = ";"
+const terminator = ","
 
 type Reader struct {
 	s *scanner.Scanner

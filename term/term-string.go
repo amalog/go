@@ -9,5 +9,5 @@ func NewString(s string) String {
 }
 
 func (a String) String() string {
-	return fmt.Sprintf("\"%s\";\n", string(a))
+	return fmt.Sprintf("\"%s\",\n", string(a))
 }

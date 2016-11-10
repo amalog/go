@@ -7,5 +7,5 @@ type Var struct {
 }
 
 func (v *Var) String() string {
-	return fmt.Sprintf("%s;\n", v.Name)
+	return fmt.Sprintf("%s,\n", v.Name)
 }

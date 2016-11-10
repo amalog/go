@@ -1,6 +1,9 @@
 package term // import "github.com/amalog/go/term"
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 type Struct struct {
 	Context Var
@@ -10,5 +13,11 @@ type Struct struct {
 }
 
 func (s *Struct) String() string {
-	return fmt.Sprintf("%#v;\n", s)
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "%s(%s)", s.Name.Name(), s.Args)
+	if len(s.Data) > 0 {
+		panic("can't yet display structs with a database")
+	}
+	buf.WriteString(",")
+	return buf.String()
 }

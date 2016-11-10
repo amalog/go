@@ -9,15 +9,15 @@ import (
 
 func TestReader(t *testing.T) {
 	tests := map[string]string{
-		`hello;`: "hello;\n",
-		`X;`:     "X;\n",
+		`hello,`: "hello,\n",
+		`X,`:     "X,\n",
 
-		`hello; bye;`: "hello;\nbye;\n",
+		`hello, bye,`: "hello,\nbye,\n",
 
 		// language does not expand \n inside strings
-		`"hello world\n";`: "\"hello world\\n\";\n",
+		`"hello world\n",`: "\"hello world\\n\",\n",
 
-		`use("amalog.org/std/io",Io);`: "use(\"amalog.org/std/io\", Io);\n",
+		`use("amalog.org/std/io",Io,),`: "use(\"amalog.org/std/io\", Io),\n",
 
 		/*
 			`main(W) { hi(W) }`: "main(W) {\t    hi(W);\n}\n",
