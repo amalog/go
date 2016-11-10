@@ -9,16 +9,7 @@ type Term interface {
 
 type Number *big.Rat
 
-type Seq []Term
-
 type Database []Term
-
-type Struct struct {
-	Context Var
-	Name    Atom
-	Args    Seq
-	Data    Database
-}
 
 func IsGround(t Term) bool {
 	return false

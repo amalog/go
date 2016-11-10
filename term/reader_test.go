@@ -17,11 +17,9 @@ func TestReader(t *testing.T) {
 		// language does not expand \n inside strings
 		`"hello world\n";`: "\"hello world\\n\";\n",
 
+		`use("amalog.org/std/io",Io);`: "use(\"amalog.org/std/io\", Io);\n",
+
 		/*
-
-
-			`use("amalog.org/std/io", Io);`: `use("amalog.org/std/io", Io);`,
-
 			`main(W) { hi(W) }`: "main(W) {\t    hi(W);\n}\n",
 
 			`Io.printf(W, "Hello, world!\n");`: `Io.printf(W,"Hello, world!\n");`,
