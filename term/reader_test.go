@@ -12,10 +12,13 @@ func TestReader(t *testing.T) {
 		`hello;`: "hello;\n",
 		`X;`:     "X;\n",
 
-		/*
-			`hello; bye;`: `hello;bye;`,
+		`hello; bye;`: "hello;\nbye;\n",
 
-			`"hello world\n"`: `"hello world\n"`,
+		// language does not expand \n inside strings
+		`"hello world\n";`: "\"hello world\\n\";\n",
+
+		/*
+
 
 			`use("amalog.org/std/io", Io);`: `use("amalog.org/std/io", Io);`,
 

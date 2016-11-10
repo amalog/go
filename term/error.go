@@ -13,3 +13,12 @@ type ErrUnexpectedToken struct {
 func (err *ErrUnexpectedToken) Error() string {
 	return fmt.Sprintf("%s unexpected token: %s", err.Token.Position, err.Token)
 }
+
+type Err struct {
+	Token   *scanner.Token
+	Message string
+}
+
+func (err *Err) Error() string {
+	return fmt.Sprintf("%s %s: %s", err.Token.Position, err.Message, err.Token)
+}

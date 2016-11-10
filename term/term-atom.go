@@ -3,7 +3,7 @@ import "fmt"
 
 type Atom string
 
-func NewAtom(s string) Term {
+func NewAtom(s string) Atom {
 	return Atom(s)
 }
 

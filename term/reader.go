@@ -36,6 +36,30 @@ func (r *Reader) Read() (Term, error) {
 			}
 		}
 		return nil, &ErrUnexpectedToken{y}
+	case scanner.String:
+		if len(x.Text) < 2 {
+			return nil, &Err{x, "string token too short"}
+		}
+		if x.Text[0] != '"' {
+			return nil, &Err{x, "string missing opening quote"}
+		}
+		if x.Text[len(x.Text)-1] != '"' {
+			return nil, &Err{x, "string missing closing quote"}
+		}
+		text := x.Text[1 : len(x.Text)-1]
+
+		y, err := r.s.Scan()
+		if err != nil {
+			return nil, err
+		}
+
+		switch y.Class {
+		case scanner.Punct:
+			if y.Text == ";" {
+				return NewString(text), nil
+			}
+		}
+		return nil, &ErrUnexpectedToken{y}
 	case scanner.Var:
 		y, err := r.s.Scan()
 		if err != nil {
