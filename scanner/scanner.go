@@ -77,6 +77,8 @@ type Scanner struct {
 	column     int
 	prevLine   int // before calling next()
 	prevColumn int // before calling next()
+
+	prevToken *Token
 }
 
 func New(r io.RuneScanner) *Scanner {
@@ -89,6 +91,29 @@ func New(r io.RuneScanner) *Scanner {
 }
 
 func (s *Scanner) Scan() (*Token, error) {
+	t, err := s.scan()
+	if err != nil {
+		s.prevToken = nil
+		return nil, err
+	}
+
+	// handle comma insertion
+	if t.Text == ")" && s.prevToken != nil {
+		if s.prevToken.Class == Punct && s.prevToken.Text == "," {
+			// previous token was already a comma
+		} else if s.prevToken.Class == Punct && s.prevToken.Text == "(" {
+			// an empty sequence. no comma needed
+		} else {
+			t.Text = ","
+			s.back()
+		}
+	}
+
+	s.prevToken = t
+	return t, err
+}
+
+func (s *Scanner) scan() (*Token, error) {
 	var ch rune
 	for {
 		ch = s.peek()

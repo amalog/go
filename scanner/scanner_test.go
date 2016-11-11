@@ -22,11 +22,11 @@ func TestScanner(t *testing.T) {
 
 		`"hello world\n"`: `[string("hello world\n")]`,
 
-		`use("amalog.org/std/io", Io),`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct()) punct(,)]`,
+		`use("amalog.org/std/io", Io),`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct(,) punct()) punct(,)]`,
 
-		`main(W) {`: `[atom(main) punct(() var(W) punct()) punct({)]`,
+		`main(W) {`: `[atom(main) punct(() var(W) punct(,) punct()) punct({)]`,
 
-		`Io.printf(W, "Hello, world!\n"),`: `[var(Io) punct(.) atom(printf) punct(() var(W) punct(,) string("Hello, world!\n") punct()) punct(,)]`,
+		`Io.printf(W, "Hello, world!\n"),`: `[var(Io) punct(.) atom(printf) punct(() var(W) punct(,) string("Hello, world!\n") punct(,) punct()) punct(,)]`,
 	}
 	for prolog, expected := range tests {
 		ts, err := tokens(prolog)
@@ -36,7 +36,7 @@ func TestScanner(t *testing.T) {
 		}
 		got := fmt.Sprintf("%s", ts)
 		if got != expected {
-			t.Errorf("got : %s\nwant: %s\n", got, expected)
+			t.Errorf("\ngot : %s\nwant: %s\n", got, expected)
 		}
 	}
 }
