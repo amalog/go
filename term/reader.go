@@ -27,42 +27,7 @@ func (r *Reader) Read() (Term, error) {
 
 	switch x.Class {
 	case scanner.Atom:
-		y, err := r.s.Scan()
-		if err != nil {
-			return nil, err
-		}
-
-		switch y.Class {
-		case scanner.Punct:
-			switch y.Text {
-			case terminator:
-				return NewAtom(x.Text), nil
-			case "(":
-				args, err := r.readSeq() // consumes closing ')'
-				if err != nil {
-					return nil, err
-				}
-
-				z, err := r.s.Scan()
-				if err != nil {
-					return nil, err
-				}
-
-				switch z.Class {
-				case scanner.Punct:
-					switch z.Text {
-					case terminator:
-						t := &Struct{
-							Name: NewAtom(x.Text),
-							Args: NewSeq(args),
-						}
-						return t, nil
-					}
-				}
-				return nil, &ErrUnexpectedToken{z}
-			}
-		}
-		return nil, &ErrUnexpectedToken{y}
+		return r.readAtomOrStruct(x)
 	case scanner.String:
 		if len(x.Text) < 2 {
 			return nil, &Err{x, "string token too short"}
@@ -109,6 +74,45 @@ func (r *Reader) Read() (Term, error) {
 	}
 
 	return nil, nil
+}
+
+func (r *Reader) readAtomOrStruct(x *scanner.Token) (Term, error) {
+	y, err := r.s.Scan()
+	if err != nil {
+		return nil, err
+	}
+
+	switch y.Class {
+	case scanner.Punct:
+		switch y.Text {
+		case terminator:
+			return NewAtom(x.Text), nil
+		case "(":
+			args, err := r.readSeq() // consumes closing ')'
+			if err != nil {
+				return nil, err
+			}
+
+			z, err := r.s.Scan()
+			if err != nil {
+				return nil, err
+			}
+
+			switch z.Class {
+			case scanner.Punct:
+				switch z.Text {
+				case terminator:
+					t := &Struct{
+						Name: NewAtom(x.Text),
+						Args: NewSeq(args),
+					}
+					return t, nil
+				}
+			}
+			return nil, &ErrUnexpectedToken{z}
+		}
+	}
+	return nil, &ErrUnexpectedToken{y}
 }
 
 // reads a sequence of terms. should be called immediately after the '('
