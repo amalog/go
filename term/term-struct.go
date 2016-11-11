@@ -2,7 +2,7 @@ package term // import "github.com/amalog/go/term"
 
 import (
 	"bytes"
-	"fmt"
+	"io"
 )
 
 type Struct struct {
@@ -14,10 +14,19 @@ type Struct struct {
 
 func (s *Struct) String() string {
 	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "%s(%s)", s.Name.Name(), s.Args)
+	s.Format(buf, Style{})
+	return buf.String()
+}
+
+func (s *Struct) Format(w io.Writer, style Style) {
+	io.WriteString(w, s.Name.Name())
+	io.WriteString(w, "(")
+	s.Args.Format(w, style)
+	io.WriteString(w, "(")
+
 	if len(s.Data) > 0 {
 		panic("can't yet display structs with a database")
 	}
-	buf.WriteString(",")
-	return buf.String()
+
+	io.WriteString(w, ",")
 }

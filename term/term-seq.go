@@ -1,5 +1,9 @@
 package term // import "github.com/amalog/go/term"
-import "bytes"
+
+import (
+	"bytes"
+	"io"
+)
 
 type Seq []Term
 
@@ -9,13 +13,16 @@ func NewSeq(args []Term) Seq {
 
 func (s Seq) String() string {
 	buf := new(bytes.Buffer)
+	s.Format(buf, Style{})
+	return buf.String()
+}
+
+func (s Seq) Format(w io.Writer, style Style) {
 	final := len(s) - 1
 	for i, t := range s {
-		buf.WriteString(t.String())
+		t.Format(w, style)
 		if i < final {
-			buf.WriteString(", ")
+			io.WriteString(w, ", ")
 		}
 	}
-
-	return buf.String()
 }

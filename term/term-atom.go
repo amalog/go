@@ -1,5 +1,10 @@
 package term // import "github.com/amalog/go/term"
-import "fmt"
+
+import (
+	"bytes"
+	"fmt"
+	"io"
+)
 
 type Atom string
 
@@ -8,7 +13,13 @@ func NewAtom(s string) Atom {
 }
 
 func (a Atom) String() string {
-	return fmt.Sprintf("%s,\n", string(a))
+	buf := new(bytes.Buffer)
+	a.Format(buf, Style{})
+	return buf.String()
+}
+
+func (a Atom) Format(w io.Writer, style Style) {
+	fmt.Fprintf(w, "%s,\n", string(a))
 }
 
 func (a Atom) Name() string {

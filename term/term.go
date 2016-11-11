@@ -1,9 +1,17 @@
 package term // import "github.com/amalog/go/term"
 
-import "math/big"
+import (
+	"io"
+	"math/big"
+)
 
 type Term interface {
-	// String produces the canonical representation of this Amalog term.
+	// Format writes a textual representation of this term according to the given
+	// style.
+	Format(io.Writer, Style)
+
+	// String produces the canonical representation of this term when it
+	// stands alone.
 	String() string
 }
 
