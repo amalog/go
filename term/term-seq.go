@@ -18,6 +18,9 @@ func (s Seq) String() string {
 }
 
 func (s Seq) Format(w io.Writer, style Style) {
+	style.OmitTerminator = true
+	style.OmitNewline = true
+
 	final := len(s) - 1
 	for i, t := range s {
 		t.Format(w, style)

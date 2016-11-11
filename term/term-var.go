@@ -2,7 +2,6 @@ package term // import "github.com/amalog/go/term"
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 )
 
@@ -18,5 +17,12 @@ func (v *Var) String() string {
 }
 
 func (v *Var) Format(w io.Writer, style Style) {
-	fmt.Fprintf(w, "%s,\n", v.Name)
+	io.WriteString(w, v.Name)
+
+	if !style.OmitTerminator {
+		io.WriteString(w, ",")
+	}
+	if !style.OmitNewline {
+		io.WriteString(w, "\n")
+	}
 }
