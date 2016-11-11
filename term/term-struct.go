@@ -19,6 +19,11 @@ func (s *Struct) String() string {
 }
 
 func (s *Struct) Format(w io.Writer, style Style) {
+	if s.Context.Name != "" {
+		io.WriteString(w, s.Context.Name)
+		io.WriteString(w, ".")
+	}
+
 	io.WriteString(w, s.Name.Name())
 	io.WriteString(w, "(")
 	s.Args.Format(w, style)

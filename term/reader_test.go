@@ -19,10 +19,10 @@ func TestReader(t *testing.T) {
 
 		`use("amalog.org/std/io",Io),`: "use(\"amalog.org/std/io\", Io),\n",
 
-		/*
-			`main(W) { hi(W) }`: "main(W) {\t    hi(W);\n}\n",
+		`Io.say(W,"Hello, world!"),`: "Io.say(W, \"Hello, world!\"),\n",
 
-			`Io.printf(W, "Hello, world!\n");`: `Io.printf(W,"Hello, world!\n");`,
+		/*
+			`main(W) { hi(W) }`: "main(W) {    hi(W);\n}\n",
 		*/
 	}
 	for amalog, expected := range tests {

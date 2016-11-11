@@ -27,7 +27,7 @@ func (r *Reader) Read() (Term, error) {
 
 	switch x.Class {
 	case scanner.Atom:
-		return r.readAtomOrStruct(x)
+		return r.readAtomOrStruct(nil, x)
 	case scanner.String:
 		if len(x.Text) < 2 {
 			return nil, &Err{x, "string token too short"}
@@ -60,12 +60,21 @@ func (r *Reader) Read() (Term, error) {
 
 		switch y.Class {
 		case scanner.Punct:
-			if y.Text == terminator {
+			switch y.Text {
+			case terminator:
 				term := &Var{
 					Name:  x.Text,
 					Value: nil,
 				}
 				return term, nil
+			case ".":
+				z, err := r.s.Scan()
+				if err != nil {
+					return nil, err
+				}
+				if z.Class == scanner.Atom {
+					return r.readAtomOrStruct(x, z)
+				}
 			}
 		}
 		return nil, &ErrUnexpectedToken{y}
@@ -76,7 +85,7 @@ func (r *Reader) Read() (Term, error) {
 	return nil, nil
 }
 
-func (r *Reader) readAtomOrStruct(x *scanner.Token) (Term, error) {
+func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 	y, err := r.s.Scan()
 	if err != nil {
 		return nil, err
@@ -86,7 +95,7 @@ func (r *Reader) readAtomOrStruct(x *scanner.Token) (Term, error) {
 	case scanner.Punct:
 		switch y.Text {
 		case terminator:
-			return NewAtom(x.Text), nil
+			return NewAtom(name.Text), nil
 		case "(":
 			args, err := r.readSeq() // consumes closing ')'
 			if err != nil {
@@ -103,8 +112,11 @@ func (r *Reader) readAtomOrStruct(x *scanner.Token) (Term, error) {
 				switch z.Text {
 				case terminator:
 					t := &Struct{
-						Name: NewAtom(x.Text),
+						Name: NewAtom(name.Text),
 						Args: NewSeq(args),
+					}
+					if context != nil {
+						t.Context = Var{Name: context.Text}
 					}
 					return t, nil
 				}
