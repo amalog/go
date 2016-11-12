@@ -30,6 +30,8 @@ func TestScanner(t *testing.T) {
 		`main(W) {`: `[atom(main) punct(() var(W) punct(,) punct()) punct({)]`,
 
 		`Io.printf(W, "Hello, world!\n"),`: `[var(Io) punct(.) atom(printf) punct(() var(W) punct(,) string("Hello, world!\n") punct(,) punct()) punct(,)]`,
+
+		"foo\nbar": `[atom(foo) punct(,) atom(bar) punct(,)]`,
 	}
 	for prolog, expected := range tests {
 		ts, err := tokens(prolog)

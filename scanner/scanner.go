@@ -15,6 +15,9 @@ const (
 	Var   Class = iota
 
 	String Class = iota
+
+	// classes used internally
+	nl Class = iota
 )
 
 const eof rune = -1
@@ -125,9 +128,12 @@ func (s *Scanner) scan() (*Token, error) {
 			return s.scanNumber()
 		} else if ch == '"' { // string
 			return s.scanString()
-		} else if ch == ' ' || ch == '\n' { // white space
+		} else if ch == ' ' { // space
 			s.skipSpace()
 			continue
+		} else if ch == '\n' { // newline
+			s.next()
+			return &Token{Class: nl, Position: s.Pos()}, nil
 		} else {
 			break
 		}
@@ -162,6 +168,9 @@ func (s *Scanner) insertComma(t *Token) {
 			t.Class = Punct
 			t.Text = ","
 		}
+	case nl:
+		t.Text = ","
+		t.Class = Punct
 	case Punct:
 		if t.Text == ")" || t.Text == "}" { // before closing a seq or db
 			t.Text = ","
@@ -244,7 +253,7 @@ func (s *Scanner) Pos() Position {
 func (s *Scanner) skipSpace() {
 	for {
 		ch := s.next()
-		if ch == ' ' || ch == '\n' {
+		if ch == ' ' {
 			continue
 		}
 		if ch != eof {

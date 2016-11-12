@@ -30,10 +30,12 @@ func TestReader(t *testing.T) {
 		`foo{bar{hi,}},`: "foo {\n    bar {\n        hi,\n    },\n},\n",
 
 		// comma inserted at newline and EOF
-		`hello`:      "hello,\n",
-		`X`:          "X,\n",
-		`hello, bye`: "hello,\nbye,\n",
-		"foo{bar}\n": "foo {\n    bar,\n},\n",
+		`hello`:        "hello,\n",
+		`X`:            "X,\n",
+		`hello, bye`:   "hello,\nbye,\n",
+		"hello\nbye":   "hello,\nbye,\n",
+		"foo{bar}\n":   "foo {\n    bar,\n},\n",
+		"a(x)\nb{y}\n": "a(x),\nb {\n    y,\n},\n",
 
 		`do { things, },`: "do {\n    things,\n},\n",
 		`Loop.do { x, },`: "Loop.do {\n    x,\n},\n",
