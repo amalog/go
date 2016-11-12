@@ -104,6 +104,9 @@ func (s *Scanner) Scan() (*Token, error) {
 
 	// handle comma insertion
 	s.insertComma(t)
+	if t.Class == nl { // newlines are for internal use only. skip them
+		return s.Scan()
+	}
 
 	s.prevToken = t
 	return t, err

@@ -36,6 +36,7 @@ func TestReader(t *testing.T) {
 		"hello\nbye":   "hello,\nbye,\n",
 		"foo{bar}\n":   "foo {\n    bar,\n},\n",
 		"a(x)\nb{y}\n": "a(x),\nb {\n    y,\n},\n",
+		"a\n\nb":       "a,\nb,\n",
 
 		`do { things, },`: "do {\n    things,\n},\n",
 		`Loop.do { x, },`: "Loop.do {\n    x,\n},\n",
