@@ -22,6 +22,8 @@ func TestReader(t *testing.T) {
 		`Io.say(W,"Hello, world!"),`: "Io.say(W, \"Hello, world!\"),\n",
 
 		`main(W) { hi(W), },`: "main(W) {\n    hi(W),\n},\n",
+
+		`foo() { bar() { baz, bye, }, },`: "foo() {\n    bar() {\n        baz,\n        bye,\n    },\n},\n",
 	}
 	for amalog, expected := range tests {
 		ts, err := terms(amalog)

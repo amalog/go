@@ -34,6 +34,7 @@ func (s *Struct) Format(w io.Writer, style Style) {
 		style.Indent++
 		s.Data.Format(w, style)
 		style.Indent--
+		style.WriteIndent(w)
 		io.WriteString(w, "}")
 	}
 
