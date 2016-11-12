@@ -45,6 +45,28 @@ func TestReader(t *testing.T) {
 	}
 }
 
+func TestInvalid(t *testing.T) {
+	tests := map[string]string{
+		`bah;`: `<input>:1:4 unexpected token: punct(;)`,
+
+		`foo`:  `<input>:1:3 unexpected end of file`,
+		`foo(`: `<input>:1:4 unexpected end of file`,
+		`foo{`: `<input>:1:4 unexpected end of file`,
+	}
+	for amalog, expected := range tests {
+		_, err := terms(amalog)
+		if err == nil {
+			t.Errorf("no syntax error: %s", amalog)
+			continue
+		}
+
+		got := err.Error()
+		if got != expected {
+			t.Errorf("\ngot : %s\nwant: %s\n", got, expected)
+		}
+	}
+}
+
 func terms(text string) ([]Term, error) {
 	terms := make([]Term, 0)
 

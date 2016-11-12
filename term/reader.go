@@ -77,6 +77,9 @@ func (r *Reader) Read() (Term, error) {
 
 func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 	y, err := r.s.Scan()
+	if err == io.EOF {
+		return nil, &ErrUnexpectedEof{r.s.Pos()}
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -155,6 +158,9 @@ func (r *Reader) readSeq(open string) ([]Term, error) {
 ARGS:
 	for {
 		t, err := r.Read()
+		if err == io.EOF {
+			return nil, &ErrUnexpectedEof{r.s.Pos()}
+		}
 		switch e := err.(type) {
 		case nil:
 			args = append(args, t)
