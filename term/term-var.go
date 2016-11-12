@@ -19,10 +19,5 @@ func (v *Var) String() string {
 func (v *Var) Format(w io.Writer, style Style) {
 	io.WriteString(w, v.Name)
 
-	if !style.OmitTerminator {
-		io.WriteString(w, ",")
-	}
-	if !style.OmitNewline {
-		io.WriteString(w, "\n")
-	}
+	style.Terminate(w)
 }

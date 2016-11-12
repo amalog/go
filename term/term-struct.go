@@ -42,10 +42,5 @@ func (s *Struct) Format(w io.Writer, style Style) {
 		io.WriteString(w, "}")
 	}
 
-	if !style.OmitTerminator {
-		io.WriteString(w, ",")
-	}
-	if !style.OmitNewline {
-		io.WriteString(w, "\n")
-	}
+	style.Terminate(w)
 }

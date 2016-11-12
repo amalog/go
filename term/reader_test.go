@@ -9,45 +9,45 @@ import (
 
 func TestReader(t *testing.T) {
 	tests := map[string]string{
-		`hello,`: "hello,\n",
-		`X,`:     "X,\n",
+		`hello,`: "hello\n",
+		`X,`:     "X\n",
 
-		`hello, bye,`: "hello,\nbye,\n",
+		`hello, bye,`: "hello\nbye\n",
 
 		// language does not expand \n inside strings
-		`"hello world\n",`: "\"hello world\\n\",\n",
+		`"hello world\n",`: "\"hello world\\n\"\n",
 
-		`use("amalog.org/std/io",Io),`: "use(\"amalog.org/std/io\", Io),\n",
+		`use("amalog.org/std/io",Io),`: "use(\"amalog.org/std/io\", Io)\n",
 
-		`Io.say(W,"Hello, world!"),`: "Io.say(W, \"Hello, world!\"),\n",
+		`Io.say(W,"Hello, world!"),`: "Io.say(W, \"Hello, world!\")\n",
 
-		`main(W) { hi(W), },`: "main(W) {\n    hi(W),\n},\n",
+		`main(W) { hi(W), },`: "main(W) {\n    hi(W)\n}\n",
 
-		`foo() { bar() { baz, bye, }, },`: "foo {\n    bar {\n        baz,\n        bye,\n    },\n},\n",
+		`foo() { bar() { baz, bye, }, },`: "foo {\n    bar {\n        baz\n        bye\n    }\n}\n",
 
 		// comma inserted for last term inside db
-		`foo{bar},`:      "foo {\n    bar,\n},\n",
-		`foo{bar{hi,}},`: "foo {\n    bar {\n        hi,\n    },\n},\n",
+		`foo{bar},`:      "foo {\n    bar\n}\n",
+		`foo{bar{hi,}},`: "foo {\n    bar {\n        hi\n    }\n}\n",
 
 		// comma inserted at newline and EOF
-		`hello`:        "hello,\n",
-		`X`:            "X,\n",
-		`hello, bye`:   "hello,\nbye,\n",
-		"hello\nbye":   "hello,\nbye,\n",
-		"foo{bar}\n":   "foo {\n    bar,\n},\n",
-		"a(x)\nb{y}\n": "a(x),\nb {\n    y,\n},\n",
-		"a\n\nb":       "a,\nb,\n",
+		`hello`:        "hello\n",
+		`X`:            "X\n",
+		`hello, bye`:   "hello\nbye\n",
+		"hello\nbye":   "hello\nbye\n",
+		"foo{bar}\n":   "foo {\n    bar\n}\n",
+		"a(x)\nb{y}\n": "a(x)\nb {\n    y\n}\n",
+		"a\n\nb":       "a\nb\n",
 
-		`do { things, },`: "do {\n    things,\n},\n",
-		`Loop.do { x, },`: "Loop.do {\n    x,\n},\n",
+		`do { things, },`: "do {\n    things\n}\n",
+		`Loop.do { x, },`: "Loop.do {\n    x\n}\n",
 
 		// structs are different from atoms
-		`stuff(),`:   "stuff(),\n",
-		`stuff{},`:   "stuff(),\n",
-		`X.stuff(),`: "X.stuff(),\n",
-		`X.stuff{},`: "X.stuff(),\n",
+		`stuff(),`:   "stuff()\n",
+		`stuff{},`:   "stuff()\n",
+		`X.stuff(),`: "X.stuff()\n",
+		`X.stuff{},`: "X.stuff()\n",
 
-		`thing(a) {},`: "thing(a),\n",
+		`thing(a) {},`: "thing(a)\n",
 	}
 	for amalog, expected := range tests {
 		ts, err := terms(amalog)

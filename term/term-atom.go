@@ -19,13 +19,7 @@ func (a Atom) String() string {
 
 func (a Atom) Format(w io.Writer, style Style) {
 	io.WriteString(w, string(a))
-
-	if !style.OmitTerminator {
-		io.WriteString(w, ",")
-	}
-	if !style.OmitNewline {
-		io.WriteString(w, "\n")
-	}
+	style.Terminate(w)
 }
 
 func (a Atom) Name() string {

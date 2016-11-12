@@ -21,3 +21,14 @@ func (s Style) WriteIndent(w io.Writer) {
 		io.WriteString(w, "    ")
 	}
 }
+
+// Terminate writes the appropriate term terminator for this style.
+func (s Style) Terminate(w io.Writer) {
+	if s.OmitNewline {
+		if !s.OmitTerminator {
+			io.WriteString(w, ",")
+		}
+	} else {
+		io.WriteString(w, "\n")
+	}
+}
