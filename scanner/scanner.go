@@ -118,6 +118,19 @@ func (s *Scanner) Scan() (*Token, error) {
 			t.Text = ","
 			s.back()
 		}
+	} else if t.Class == Eof && s.prevToken != nil {
+		if s.prevToken.Class == Punct && s.prevToken.Text == "," {
+			// previous token was already a comma
+		} else if s.prevToken.Class == Punct && s.prevToken.Text == "(" {
+			// previous token was already a comma
+		} else if s.prevToken.Class == Punct && s.prevToken.Text == "{" {
+			// previous token was already a comma
+		} else if s.prevToken.Class == Eof {
+			// already handled EOF
+		} else {
+			t.Class = Punct
+			t.Text = ","
+		}
 	}
 
 	s.prevToken = t

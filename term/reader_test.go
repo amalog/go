@@ -29,6 +29,12 @@ func TestReader(t *testing.T) {
 		`foo{bar},`:      "foo {\n    bar,\n},\n",
 		`foo{bar{hi,}},`: "foo {\n    bar {\n        hi,\n    },\n},\n",
 
+		// comma inserted at newline and EOF
+		`hello`:      "hello,\n",
+		`X`:          "X,\n",
+		`hello, bye`: "hello,\nbye,\n",
+		"foo{bar}\n": "foo {\n    bar,\n},\n",
+
 		`do { things, },`: "do {\n    things,\n},\n",
 		`Loop.do { x, },`: "Loop.do {\n    x,\n},\n",
 
@@ -61,13 +67,10 @@ func TestInvalid(t *testing.T) {
 	tests := map[string]string{
 		`bah;`: `<input>:1:4 unexpected token: punct(;)`,
 
-		`foo`:  `<input>:1:3 unexpected end of file`,
 		`foo(`: `<input>:1:4 unexpected end of file`,
 		`foo{`: `<input>:1:4 unexpected end of file`,
 		`foo)`: `<input>:1:4 unexpected token: punct())`,
 		`foo}`: `<input>:1:4 unexpected token: punct(})`,
-
-		`foo{bar}`: `<input>:1:8 unexpected end of file`,
 	}
 	for amalog, expected := range tests {
 		x, err := terms(amalog)

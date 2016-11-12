@@ -8,22 +8,22 @@ import (
 
 func TestScanner(t *testing.T) {
 	tests := map[string]string{
-		`hello.`: `[atom(hello) punct(.)]`,
+		`hello.`: `[atom(hello) punct(.) punct(,)]`,
 		`hello,`: `[atom(hello) punct(,)]`,
-		`3.141.`: `[num(3.141) punct(.)]`,
-		`X`:      `[var(X)]`,
-		`FooBar`: `[var(FooBar)]`,
-		`}`:      `[punct(})]`,
+		`3.141.`: `[num(3.141) punct(.) punct(,)]`,
+		`X`:      `[var(X) punct(,)]`,
+		`FooBar`: `[var(FooBar) punct(,)]`,
+		`}`:      `[punct(}) punct(,)]`,
 
-		"123 hi":    `[num(123) atom(hi)]`,
-		"123.4 bye": `[num(123.4) atom(bye)]`,
-		"9_876":     `[num(9_876)]`,
+		"123 hi":    `[num(123) atom(hi) punct(,)]`,
+		"123.4 bye": `[num(123.4) atom(bye) punct(,)]`,
+		"9_876":     `[num(9_876) punct(,)]`,
 
-		"foo ": `[atom(foo)]`, // trailing whitespace
+		"foo ": `[atom(foo) punct(,)]`, // trailing whitespace
 
-		`foo{bar}`: `[atom(foo) punct({) atom(bar) punct(,) punct(})]`,
+		`foo{bar}`: `[atom(foo) punct({) atom(bar) punct(,) punct(}) punct(,)]`,
 
-		`"hello world\n"`: `[string("hello world\n")]`,
+		`"hello world\n"`: `[string("hello world\n") punct(,)]`,
 
 		`use("amalog.org/std/io", Io),`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct(,) punct()) punct(,)]`,
 
