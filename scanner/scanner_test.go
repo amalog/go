@@ -22,6 +22,8 @@ func TestScanner(t *testing.T) {
 
 		"foo ": `[atom(foo)]`, // trailing whitespace
 
+		`foo{bar}`: `[atom(foo) punct({) atom(bar) punct(,) punct(})]`,
+
 		`"hello world\n"`: `[string("hello world\n")]`,
 
 		`use("amalog.org/std/io", Io),`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct(,) punct()) punct(,)]`,

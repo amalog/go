@@ -25,6 +25,10 @@ func TestReader(t *testing.T) {
 
 		`foo() { bar() { baz, bye, }, },`: "foo {\n    bar {\n        baz,\n        bye,\n    },\n},\n",
 
+		// comma inserted for last term inside db
+		`foo{bar},`:      "foo {\n    bar,\n},\n",
+		`foo{bar{hi,}},`: "foo {\n    bar {\n        hi,\n    },\n},\n",
+
 		`do { things, },`: "do {\n    things,\n},\n",
 		`Loop.do { x, },`: "Loop.do {\n    x,\n},\n",
 	}
@@ -52,17 +56,21 @@ func TestInvalid(t *testing.T) {
 		`foo`:  `<input>:1:3 unexpected end of file`,
 		`foo(`: `<input>:1:4 unexpected end of file`,
 		`foo{`: `<input>:1:4 unexpected end of file`,
+		`foo)`: `<input>:1:4 unexpected token: punct())`,
+		`foo}`: `<input>:1:4 unexpected token: punct(})`,
+
+		`foo{bar}`: `<input>:1:8 unexpected end of file`,
 	}
 	for amalog, expected := range tests {
-		_, err := terms(amalog)
+		x, err := terms(amalog)
 		if err == nil {
-			t.Errorf("no syntax error: %s", amalog)
+			t.Errorf("no syntax error:\ngot : %s\nfrom: %s", x, amalog)
 			continue
 		}
 
 		got := err.Error()
 		if got != expected {
-			t.Errorf("\ngot : %s\nwant: %s\n", got, expected)
+			t.Errorf("\ngot : %s\nwant: %s\n%s", got, expected, amalog)
 		}
 	}
 }

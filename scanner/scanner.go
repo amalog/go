@@ -107,6 +107,15 @@ func (s *Scanner) Scan() (*Token, error) {
 			t.Text = ","
 			s.back()
 		}
+	} else if t.Text == "}" && s.prevToken != nil {
+		if s.prevToken.Class == Punct && s.prevToken.Text == "," {
+			// previous token was already a comma
+		} else if s.prevToken.Class == Punct && s.prevToken.Text == "{" {
+			// an empty sequence. no comma needed
+		} else {
+			t.Text = ","
+			s.back()
+		}
 	}
 
 	s.prevToken = t
