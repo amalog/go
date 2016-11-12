@@ -14,6 +14,14 @@ func (err *ErrUnexpectedToken) Error() string {
 	return fmt.Sprintf("%s unexpected token: %s", err.Token.Position, err.Token)
 }
 
+type ErrUnexpectedEof struct {
+	Position scanner.Position
+}
+
+func (err *ErrUnexpectedEof) Error() string {
+	return fmt.Sprintf("%s unexpected end of file", err.Position)
+}
+
 type Err struct {
 	Token   *scanner.Token
 	Message string

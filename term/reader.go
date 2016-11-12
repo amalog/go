@@ -126,7 +126,22 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 						return nil, err
 					}
 					t.Data = NewDb(data)
-					return t, nil
+
+					x, err := r.s.Scan()
+					if err == io.EOF {
+						return nil, &ErrUnexpectedEof{r.s.Pos()}
+					}
+					if err != nil {
+						return nil, err
+					}
+					switch x.Class {
+					case scanner.Punct:
+						switch x.Text {
+						case terminator:
+							return t, nil
+						}
+					}
+					return nil, &ErrUnexpectedToken{z}
 				}
 			}
 			return nil, &ErrUnexpectedToken{z}
