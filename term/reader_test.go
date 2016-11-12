@@ -63,6 +63,23 @@ func TestReader(t *testing.T) {
 		if got != expected {
 			t.Errorf("\ngot : %s\nwant: %s\n", got, expected)
 		}
+
+		// canonical source can be parsed
+		ts, err = terms(got)
+		if err != nil {
+			t.Errorf("can't parse canonical source: %s\n%s", err, amalog)
+			return
+		}
+
+		// formatting it again gives the same result
+		buf = bytes.Buffer{}
+		for _, term := range ts {
+			buf.WriteString(term.String())
+		}
+		rewritten := buf.String()
+		if rewritten != got {
+			t.Errorf("canonical is not canonical\ngot : %s\nwant: %s\n", rewritten, got)
+		}
 	}
 }
 
