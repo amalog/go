@@ -23,7 +23,10 @@ func TestReader(t *testing.T) {
 
 		`main(W) { hi(W), },`: "main(W) {\n    hi(W),\n},\n",
 
-		`foo() { bar() { baz, bye, }, },`: "foo() {\n    bar() {\n        baz,\n        bye,\n    },\n},\n",
+		`foo() { bar() { baz, bye, }, },`: "foo {\n    bar {\n        baz,\n        bye,\n    },\n},\n",
+
+		`do { things, },`: "do {\n    things,\n},\n",
+		`Loop.do { x, },`: "Loop.do {\n    x,\n},\n",
 	}
 	for amalog, expected := range tests {
 		ts, err := terms(amalog)

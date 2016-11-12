@@ -120,6 +120,20 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 				}
 			}
 			return nil, &ErrUnexpectedToken{z}
+		case "{":
+			data, err := r.readSeq(y.Text) // consumes closing '}'
+			if err != nil {
+				return nil, err
+			}
+
+			t := &Struct{
+				Name: NewAtom(name.Text),
+				Data: NewDb(data),
+			}
+			if context != nil {
+				t.Context = Var{Name: context.Text}
+			}
+			return r.terminate(t)
 		}
 	}
 	return nil, &ErrUnexpectedToken{y}

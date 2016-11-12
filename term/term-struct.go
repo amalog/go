@@ -25,9 +25,12 @@ func (s *Struct) Format(w io.Writer, style Style) {
 	}
 
 	io.WriteString(w, s.Name.Name())
-	io.WriteString(w, "(")
-	s.Args.Format(w, style)
-	io.WriteString(w, ")")
+
+	if len(s.Args) > 0 {
+		io.WriteString(w, "(")
+		s.Args.Format(w, style)
+		io.WriteString(w, ")")
+	}
 
 	if len(s.Data) > 0 {
 		io.WriteString(w, " {\n")
