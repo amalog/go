@@ -1,4 +1,5 @@
 package term // import "github.com/amalog/go/term"
+import "io"
 
 type Style struct {
 	// OmitNewline should be to set to true to avoid including newlines after each
@@ -8,4 +9,15 @@ type Style struct {
 	// OmitTerminator should be set to true to avoid including term terminators in
 	// the output.
 	OmitTerminator bool
+
+	// Indent indicates the number of levels of indentation that should be applied
+	// before the term is displayed.
+	Indent int
+}
+
+// WriteIndent writes the appropriate amount of indentation for this style.
+func (s Style) WriteIndent(w io.Writer) {
+	for i := 0; i < s.Indent; i++ {
+		io.WriteString(w, "    ")
+	}
 }

@@ -17,8 +17,6 @@ type Term interface {
 
 type Number *big.Rat
 
-type Database []Term
-
 func IsGround(t Term) bool {
 	return false
 }

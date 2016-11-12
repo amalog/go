@@ -21,14 +21,12 @@ func TestReader(t *testing.T) {
 
 		`Io.say(W,"Hello, world!"),`: "Io.say(W, \"Hello, world!\"),\n",
 
-		/*
-			`main(W) { hi(W) }`: "main(W) {    hi(W);\n}\n",
-		*/
+		`main(W) { hi(W), }`: "main(W) {\n    hi(W),\n},\n",
 	}
 	for amalog, expected := range tests {
 		ts, err := terms(amalog)
 		if err != nil {
-			t.Errorf("oops: %s", err)
+			t.Errorf("oops: %s\n%s", err, amalog)
 			return
 		}
 		var buf bytes.Buffer

@@ -97,7 +97,7 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 		case terminator:
 			return NewAtom(name.Text), nil
 		case "(":
-			args, err := r.readSeq() // consumes closing ')'
+			args, err := r.readSeq(y.Text) // consumes closing ')'
 			if err != nil {
 				return nil, err
 			}
@@ -107,17 +107,25 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 				return nil, err
 			}
 
+			t := &Struct{
+				Name: NewAtom(name.Text),
+				Args: NewSeq(args),
+			}
+			if context != nil {
+				t.Context = Var{Name: context.Text}
+			}
+
 			switch z.Class {
 			case scanner.Punct:
 				switch z.Text {
 				case terminator:
-					t := &Struct{
-						Name: NewAtom(name.Text),
-						Args: NewSeq(args),
+					return t, nil
+				case "{":
+					data, err := r.readSeq(z.Text) // consumes closing '}'
+					if err != nil {
+						return nil, err
 					}
-					if context != nil {
-						t.Context = Var{Name: context.Text}
-					}
+					t.Data = NewDb(data)
 					return t, nil
 				}
 			}
@@ -128,9 +136,17 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 }
 
 // reads a sequence of terms. should be called immediately after the '('
-// term is consumed.  consumes the closing ')' term.
-func (r *Reader) readSeq() ([]Term, error) {
+// (or '}') token is consumed.  consumes the closing ')' (or '}') token.
+func (r *Reader) readSeq(open string) ([]Term, error) {
 	args := make([]Term, 0)
+
+	var close string
+	switch open {
+	case "(":
+		close = ")"
+	case "{":
+		close = "}"
+	}
 
 ARGS:
 	for {
@@ -139,7 +155,7 @@ ARGS:
 		case nil:
 			args = append(args, t)
 		case *ErrUnexpectedToken:
-			if e.Token.Class == scanner.Punct && e.Token.Text == ")" {
+			if e.Token.Class == scanner.Punct && e.Token.Text == close {
 				break ARGS
 			}
 			return nil, err

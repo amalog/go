@@ -9,7 +9,7 @@ type Struct struct {
 	Context Var
 	Name    Atom
 	Args    Seq
-	Data    Database
+	Data    Db
 }
 
 func (s *Struct) String() string {
@@ -30,7 +30,11 @@ func (s *Struct) Format(w io.Writer, style Style) {
 	io.WriteString(w, ")")
 
 	if len(s.Data) > 0 {
-		panic("can't yet display structs with a database")
+		io.WriteString(w, " {\n")
+		style.Indent++
+		s.Data.Format(w, style)
+		style.Indent--
+		io.WriteString(w, "}")
 	}
 
 	if !style.OmitTerminator {
