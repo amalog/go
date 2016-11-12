@@ -20,6 +20,8 @@ func TestScanner(t *testing.T) {
 		"123.4 bye": `[num(123.4) atom(bye)]`,
 		"9_876":     `[num(9_876)]`,
 
+		"foo ": `[atom(foo)]`, // trailing whitespace
+
 		`"hello world\n"`: `[string("hello world\n")]`,
 
 		`use("amalog.org/std/io", Io),`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct(,) punct()) punct(,)]`,

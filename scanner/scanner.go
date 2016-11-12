@@ -226,7 +226,9 @@ func (s *Scanner) skipSpace() {
 		if ch == ' ' || ch == '\n' {
 			continue
 		}
-		s.back()
+		if ch != EOF {
+			s.back()
+		}
 		break
 	}
 }
