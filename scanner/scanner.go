@@ -100,38 +100,7 @@ func (s *Scanner) Scan() (*Token, error) {
 	}
 
 	// handle comma insertion
-	if t.Text == ")" && s.prevToken != nil {
-		if s.prevToken.Class == Punct && s.prevToken.Text == "," {
-			// previous token was already a comma
-		} else if s.prevToken.Class == Punct && s.prevToken.Text == "(" {
-			// an empty sequence. no comma needed
-		} else {
-			t.Text = ","
-			s.back()
-		}
-	} else if t.Text == "}" && s.prevToken != nil {
-		if s.prevToken.Class == Punct && s.prevToken.Text == "," {
-			// previous token was already a comma
-		} else if s.prevToken.Class == Punct && s.prevToken.Text == "{" {
-			// an empty sequence. no comma needed
-		} else {
-			t.Text = ","
-			s.back()
-		}
-	} else if t.Class == Eof && s.prevToken != nil {
-		if s.prevToken.Class == Punct && s.prevToken.Text == "," {
-			// previous token was already a comma
-		} else if s.prevToken.Class == Punct && s.prevToken.Text == "(" {
-			// previous token was already a comma
-		} else if s.prevToken.Class == Punct && s.prevToken.Text == "{" {
-			// previous token was already a comma
-		} else if s.prevToken.Class == Eof {
-			// already handled EOF
-		} else {
-			t.Class = Punct
-			t.Text = ","
-		}
-	}
+	s.insertComma(t)
 
 	s.prevToken = t
 	return t, err
@@ -171,6 +140,34 @@ func (s *Scanner) scan() (*Token, error) {
 		Text:     string([]rune{ch}),
 	}
 	return t, nil
+}
+
+func (s *Scanner) insertComma(t *Token) {
+	// don't insert comma as first token
+	if s.prevToken == nil {
+		return
+	}
+
+	// certain punctuation prohibits comma insertion
+	if s.prevToken.Class == Punct {
+		switch s.prevToken.Text {
+		case ",", "(", "{":
+			return
+		}
+	}
+
+	switch t.Class {
+	case Eof:
+		if s.prevToken.Class != Eof { // before first EOF token
+			t.Class = Punct
+			t.Text = ","
+		}
+	case Punct:
+		if t.Text == ")" || t.Text == "}" { // before closing a seq or db
+			t.Text = ","
+			s.back()
+		}
+	}
 }
 
 func (s *Scanner) peek() rune {
