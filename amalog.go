@@ -9,17 +9,37 @@ import (
 )
 
 type Amalog struct {
+	In  io.Reader
 	Out io.Writer
 	Err io.Writer
 }
 
 func (ama *Amalog) Run(args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintf(ama.Err, "Usage: ama foo.ama\n")
-		return 1
+		return ama.CmdRepl()
 	}
 
 	return ama.CmdFormat(args[0])
+}
+
+func (ama *Amalog) CmdRepl() int {
+	buf := bufio.NewReader(ama.In)
+	style := term.Style{}
+	reader := term.NewReader(buf)
+	for {
+		fmt.Fprintf(ama.Out, "?- ")
+		t, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Fprintf(ama.Err, "%s\n", err)
+			continue
+		}
+
+		t.Format(ama.Out, style)
+	}
+	return 0
 }
 
 func (ama *Amalog) CmdFormat(filename string) int {
