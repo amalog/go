@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/amalog/go/term"
 )
@@ -24,20 +25,30 @@ func (ama *Amalog) Run(args []string) int {
 
 func (ama *Amalog) CmdRepl() int {
 	buf := bufio.NewReader(ama.In)
+
 	style := term.Style{}
-	reader := term.NewReader(buf)
 	for {
 		fmt.Fprintf(ama.Out, "?- ")
-		t, err := reader.Read()
+		line, err := buf.ReadString('\n')
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
-			fmt.Fprintf(ama.Err, "%s\n", err)
-			continue
+			fmt.Fprintln(ama.Err, err)
 		}
 
-		t.Format(ama.Out, style)
+		reader := term.NewReader(strings.NewReader(line))
+		for {
+			t, err := reader.Read()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				fmt.Fprintln(ama.Err, err)
+				break
+			}
+			t.Format(ama.Out, style)
+		}
 	}
 	return 0
 }
