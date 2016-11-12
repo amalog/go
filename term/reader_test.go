@@ -31,6 +31,14 @@ func TestReader(t *testing.T) {
 
 		`do { things, },`: "do {\n    things,\n},\n",
 		`Loop.do { x, },`: "Loop.do {\n    x,\n},\n",
+
+		// structs are different from atoms
+		`stuff(),`:   "stuff(),\n",
+		`stuff{},`:   "stuff(),\n",
+		`X.stuff(),`: "X.stuff(),\n",
+		`X.stuff{},`: "X.stuff(),\n",
+
+		`thing(a) {},`: "thing(a),\n",
 	}
 	for amalog, expected := range tests {
 		ts, err := terms(amalog)

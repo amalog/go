@@ -26,7 +26,8 @@ func (s *Struct) Format(w io.Writer, style Style) {
 
 	io.WriteString(w, s.Name.Name())
 
-	if len(s.Args) > 0 {
+	nilary := len(s.Args) == 0 && len(s.Data) == 0
+	if len(s.Args) > 0 || nilary {
 		io.WriteString(w, "(")
 		s.Args.Format(w, style)
 		io.WriteString(w, ")")
