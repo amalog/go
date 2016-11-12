@@ -9,7 +9,7 @@ type Class int
 
 const (
 	Atom  Class = iota
-	Neck  Class = iota
+	Eof   Class = iota
 	Num   Class = iota
 	Punct Class = iota
 	Var   Class = iota
@@ -17,7 +17,7 @@ const (
 	String Class = iota
 )
 
-const EOF rune = -1
+const eof rune = -1
 
 type Position struct {
 	Filename string
@@ -52,8 +52,8 @@ func (t *Token) String() string {
 	switch t.Class {
 	case Atom:
 		return fmt.Sprintf("atom(%s)", t.Text)
-	case Neck:
-		return "neck"
+	case Eof:
+		return "eof"
 	case Num:
 		return fmt.Sprintf("num(%s)", t.Text)
 	case Punct:
@@ -90,6 +90,8 @@ func New(r io.RuneScanner) *Scanner {
 	return s
 }
 
+// Scan returns the next token in the input.  Returns an infinite stream of Eof
+// tokens once reaching the end of input.
 func (s *Scanner) Scan() (*Token, error) {
 	t, err := s.scan()
 	if err != nil {
@@ -126,9 +128,9 @@ func (s *Scanner) scan() (*Token, error) {
 	var ch rune
 	for {
 		ch = s.peek()
-		if ch == EOF {
+		if ch == eof {
 			if s.err == nil {
-				return nil, io.EOF
+				return &Token{Class: Eof, Position: s.Pos()}, nil
 			}
 			return nil, s.err
 		}
@@ -160,7 +162,7 @@ func (s *Scanner) scan() (*Token, error) {
 
 func (s *Scanner) peek() rune {
 	ch := s.next()
-	if ch == EOF {
+	if ch == eof {
 		return ch
 	}
 	s.back()
@@ -184,7 +186,7 @@ func (s *Scanner) next() rune {
 
 	ch, _, err := s.r.ReadRune()
 	if err == io.EOF {
-		return EOF
+		return eof
 	}
 	if err != nil {
 		panic(err)
@@ -193,7 +195,7 @@ func (s *Scanner) next() rune {
 	// handle prohibited characters
 	if ch == '\t' || ch == '\r' {
 		s.err = s.prohibitedCharacter(ch)
-		return EOF
+		return eof
 	}
 
 	// update position information
@@ -235,7 +237,7 @@ func (s *Scanner) skipSpace() {
 		if ch == ' ' || ch == '\n' {
 			continue
 		}
-		if ch != EOF {
+		if ch != eof {
 			s.back()
 		}
 		break
@@ -252,7 +254,7 @@ CH:
 		switch {
 		case ch >= 'a' && ch <= 'z', ch == '_':
 			chars = append(chars, ch)
-		case ch == EOF:
+		case ch == eof:
 			break CH
 		default:
 			s.back()
@@ -295,7 +297,7 @@ CH:
 				panic("called scanVariable without upper case letter next in stream")
 			}
 			chars = append(chars, ch)
-		case ch == EOF:
+		case ch == eof:
 			break CH
 		default:
 			s.back()
@@ -354,7 +356,7 @@ CH:
 		case ch == '(', ch == ')', ch == ',', ch == '.', ch == ' ':
 			s.back()
 			break CH
-		case ch == EOF:
+		case ch == eof:
 			break CH
 		default:
 			err := &SyntaxError{

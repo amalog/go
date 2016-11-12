@@ -2,7 +2,6 @@ package scanner // import "github.com/amalog/go/scanner"
 
 import (
 	"fmt"
-	"io"
 	"strings"
 	"testing"
 )
@@ -51,11 +50,11 @@ func tokens(text string) ([]*Token, error) {
 	s := New(strings.NewReader(text))
 	for {
 		t, err := s.Scan()
-		if err == io.EOF {
-			return ts, nil
-		}
 		if err != nil {
 			return nil, err
+		}
+		if t.Class == Eof {
+			return ts, nil
 		}
 		ts = append(ts, t)
 	}
