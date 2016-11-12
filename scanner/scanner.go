@@ -143,7 +143,7 @@ func (s *Scanner) scan() (*Token, error) {
 	_ = s.next() // consume punctuation character
 	t := &Token{
 		Class:    Punct,
-		Position: s.pos(),
+		Position: s.Pos(),
 		Text:     string([]rune{ch}),
 	}
 	return t, nil
@@ -207,12 +207,12 @@ func (s *Scanner) prohibitedCharacter(ch rune) *SyntaxError {
 		name = "carriage return"
 	}
 	return &SyntaxError{
-		Position: s.pos(),
+		Position: s.Pos(),
 		Message:  fmt.Sprintf("The %s character is prohibited", name),
 	}
 }
 
-func (s *Scanner) pos() Position {
+func (s *Scanner) Pos() Position {
 	return Position{
 		Filename: s.filename,
 		Line:     s.line,
@@ -235,7 +235,7 @@ func (s *Scanner) scanAtom() (*Token, error) {
 	chars := make([]rune, 0)
 
 	ch := s.next()
-	pos := s.pos()
+	pos := s.Pos()
 CH:
 	for {
 		switch {
@@ -263,7 +263,7 @@ func (s *Scanner) scanVariable() (*Token, error) {
 	chars := make([]rune, 0)
 
 	ch := s.next()
-	pos := s.pos()
+	pos := s.Pos()
 CH:
 	for {
 		switch {
@@ -272,7 +272,7 @@ CH:
 				prev := chars[len(chars)-1]
 				if prev < 'a' || prev > 'z' {
 					err := &SyntaxError{
-						Position: s.pos(),
+						Position: s.Pos(),
 						Message:  fmt.Sprintf("variable names may not have consecutive uppercase letters, got %c", ch),
 					}
 					return nil, err
@@ -334,7 +334,7 @@ func (s *Scanner) scanInteger() (*Token, error) {
 	chars := make([]rune, 0)
 
 	ch := s.next()
-	pos := s.pos()
+	pos := s.Pos()
 CH:
 	for {
 		switch {
@@ -347,7 +347,7 @@ CH:
 			break CH
 		default:
 			err := &SyntaxError{
-				Position: s.pos(),
+				Position: s.Pos(),
 				Message:  fmt.Sprintf("Unexpected number character: '%c'", ch),
 			}
 			return nil, err
@@ -375,7 +375,7 @@ func (s *Scanner) scanString() (*Token, error) {
 	chars = append(chars, ch)
 
 	ch = s.next()
-	pos := s.pos()
+	pos := s.Pos()
 	for {
 		chars = append(chars, ch)
 		if ch == '"' {
