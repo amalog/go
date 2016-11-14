@@ -34,13 +34,32 @@ func TestScanner(t *testing.T) {
 		"foo\nbar": `[atom(foo) punct(,) atom(bar) punct(,)]`,
 		"a\n\nb":   `[atom(a) punct(,) atom(b) punct(,)]`,
 	}
-	for prolog, expected := range tests {
-		ts, err := tokens(prolog)
+	for amalog, expected := range tests {
+		ts, err := tokens(amalog)
 		if err != nil {
 			t.Errorf("oops: %s", err)
 			return
 		}
 		got := fmt.Sprintf("%s", ts)
+		if got != expected {
+			t.Errorf("\ngot : %s\nwant: %s\n", got, expected)
+		}
+	}
+}
+
+func TestInvalid(t *testing.T) {
+	tests := map[string]string{
+		"abc {\n\tfoo\n}": `<input>:2:0: The tab character is prohibited`,
+		"abc {}\r\n":      `<input>:1:6: The carriage return character is prohibited`,
+	}
+	for amalog, expected := range tests {
+		_, err := tokens(amalog)
+		if err == nil {
+			t.Errorf("no error: %s", amalog)
+			continue
+		}
+
+		got := err.Error()
 		if got != expected {
 			t.Errorf("\ngot : %s\nwant: %s\n", got, expected)
 		}
