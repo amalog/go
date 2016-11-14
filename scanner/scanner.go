@@ -5,70 +5,7 @@ import (
 	"io"
 )
 
-type Class int
-
-const (
-	Atom  Class = iota
-	Eof   Class = iota
-	Num   Class = iota
-	Punct Class = iota
-	Var   Class = iota
-
-	String Class = iota
-
-	// classes used internally
-	nl Class = iota
-)
-
 const eof rune = -1
-
-type Position struct {
-	Filename string
-	Line     int
-	Column   int
-}
-
-func (pos Position) String() string {
-	f := pos.Filename
-	if f == "" {
-		f = "<input>"
-	}
-	return fmt.Sprintf("%s:%d:%d", f, pos.Line, pos.Column)
-}
-
-type SyntaxError struct {
-	Position Position
-	Message  string
-}
-
-func (err *SyntaxError) Error() string {
-	return fmt.Sprintf("%s: %s", err.Position, err.Message)
-}
-
-type Token struct {
-	Class    Class
-	Position Position
-	Text     string
-}
-
-func (t *Token) String() string {
-	switch t.Class {
-	case Atom:
-		return fmt.Sprintf("atom(%s)", t.Text)
-	case Eof:
-		return "eof"
-	case Num:
-		return fmt.Sprintf("num(%s)", t.Text)
-	case Punct:
-		return fmt.Sprintf("punct(%s)", t.Text)
-	case String:
-		return fmt.Sprintf("string(%s)", t.Text)
-	case Var:
-		return fmt.Sprintf("var(%s)", t.Text)
-	default:
-		return "<unknown token class>"
-	}
-}
 
 type Scanner struct {
 	r io.RuneScanner
