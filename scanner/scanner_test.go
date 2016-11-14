@@ -10,7 +10,7 @@ func TestScanner(t *testing.T) {
 	tests := map[string]string{
 		`hello.`: `[atom(hello) punct(.) punct(,)]`,
 		`hello,`: `[atom(hello) punct(,)]`,
-		`3.141.`: `[num(3.141) punct(.) punct(,)]`,
+		`3.141.`: `[num(3.141.) punct(,)]`, // valid token. bad syntax
 		`X`:      `[var(X) punct(,)]`,
 		`FooBar`: `[var(FooBar) punct(,)]`,
 		`}`:      `[punct(}) punct(,)]`,

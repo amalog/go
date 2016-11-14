@@ -334,61 +334,26 @@ CH:
 }
 
 func (s *Scanner) scanNumber(ch rune) (*Token, error) {
-	x, err := s.scanInteger(ch)
-	if err != nil {
-		return nil, err
-	}
-
-	switch ch := s.next(); ch {
-	case '.':
-		ch = s.next()
-		y, err := s.scanInteger(ch)
-		if err != nil {
-			return nil, err
-		}
-		t := &Token{
-			Class:    Num,
-			Position: x.Position,
-			Text:     x.Text + "." + y.Text,
-		}
-		return t, nil
-	default:
-		t := &Token{
-			Class:    Num,
-			Position: x.Position,
-			Text:     x.Text,
-		}
-		return t, nil
-	}
-}
-
-func (s *Scanner) scanInteger(ch rune) (*Token, error) {
 	chars := make([]rune, 0)
 
 	pos := s.Pos()
 CH:
 	for {
 		switch {
-		case ch >= '0' && ch <= '9', ch == '_':
+		case ch >= '0' && ch <= '9', ch == '_', ch == '.':
 			chars = append(chars, ch)
-		case ch == '(', ch == ')', ch == ',', ch == '.', ch == ' ':
-			s.back()
-			break CH
 		case ch == eof:
 			break CH
 		default:
-			err := &SyntaxError{
-				Position: s.Pos(),
-				Message:  fmt.Sprintf("Unexpected number character: '%c'", ch),
-			}
-			return nil, err
+			s.back()
+			break CH
 		}
 
 		ch = s.next()
 	}
 
 	t := &Token{
-		Class:    Num, // not really
+		Class:    Num,
 		Position: pos,
 		Text:     string(chars),
 	}
