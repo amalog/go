@@ -292,17 +292,23 @@ func (s *Scanner) scanString(ch rune) (*Token, error) {
 	chars := make([]rune, 0)
 
 	// consume opening quote character
+	pos := s.Pos()
 	if ch != '"' {
 		panic("scanString without a double quote character to start")
 	}
 	chars = append(chars, ch)
 
 	ch = s.next()
-	pos := s.Pos()
 	for {
 		chars = append(chars, ch)
 		if ch == '"' {
 			break
+		}
+		if ch == eof {
+			return nil, &SyntaxError{
+				Position: pos,
+				Message:  "Runaway string",
+			}
 		}
 		ch = s.next()
 	}
