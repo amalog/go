@@ -115,7 +115,7 @@ func (s *Scanner) Scan() (*Token, error) {
 func (s *Scanner) scan() (*Token, error) {
 	var ch rune
 	for {
-		ch = s.peek()
+		ch = s.next()
 		if ch == eof {
 			if s.err == nil {
 				return &Token{Class: Eof, Position: s.Pos()}, nil
@@ -124,25 +124,23 @@ func (s *Scanner) scan() (*Token, error) {
 		}
 
 		if ch >= 'a' && ch <= 'z' { // atom
-			return s.scanAtom()
+			return s.scanAtom(ch)
 		} else if ch >= 'A' && ch <= 'Z' { // variable
-			return s.scanVariable()
+			return s.scanVariable(ch)
 		} else if ch >= '0' && ch <= '9' { // number
-			return s.scanNumber()
+			return s.scanNumber(ch)
 		} else if ch == '"' { // string
-			return s.scanString()
+			return s.scanString(ch)
 		} else if ch == ' ' { // space
 			s.skipSpace()
 			continue
 		} else if ch == '\n' { // newline
-			s.next()
 			return &Token{Class: nl, Position: s.Pos()}, nil
 		} else {
 			break
 		}
 	}
 
-	_ = s.next() // consume punctuation character
 	t := &Token{
 		Class:    Punct,
 		Position: s.Pos(),
@@ -266,10 +264,9 @@ func (s *Scanner) skipSpace() {
 	}
 }
 
-func (s *Scanner) scanAtom() (*Token, error) {
+func (s *Scanner) scanAtom(ch rune) (*Token, error) {
 	chars := make([]rune, 0)
 
-	ch := s.next()
 	pos := s.Pos()
 CH:
 	for {
@@ -294,10 +291,9 @@ CH:
 	return t, nil
 }
 
-func (s *Scanner) scanVariable() (*Token, error) {
+func (s *Scanner) scanVariable(ch rune) (*Token, error) {
 	chars := make([]rune, 0)
 
-	ch := s.next()
 	pos := s.Pos()
 CH:
 	for {
@@ -337,15 +333,16 @@ CH:
 	return t, nil
 }
 
-func (s *Scanner) scanNumber() (*Token, error) {
-	x, err := s.scanInteger()
+func (s *Scanner) scanNumber(ch rune) (*Token, error) {
+	x, err := s.scanInteger(ch)
 	if err != nil {
 		return nil, err
 	}
 
 	switch ch := s.next(); ch {
 	case '.':
-		y, err := s.scanInteger()
+		ch = s.next()
+		y, err := s.scanInteger(ch)
 		if err != nil {
 			return nil, err
 		}
@@ -365,10 +362,9 @@ func (s *Scanner) scanNumber() (*Token, error) {
 	}
 }
 
-func (s *Scanner) scanInteger() (*Token, error) {
+func (s *Scanner) scanInteger(ch rune) (*Token, error) {
 	chars := make([]rune, 0)
 
-	ch := s.next()
 	pos := s.Pos()
 CH:
 	for {
@@ -399,11 +395,10 @@ CH:
 	return t, nil
 }
 
-func (s *Scanner) scanString() (*Token, error) {
+func (s *Scanner) scanString(ch rune) (*Token, error) {
 	chars := make([]rune, 0)
 
 	// consume opening quote character
-	ch := s.next()
 	if ch != '"' {
 		panic("scanString without a double quote character to start")
 	}
