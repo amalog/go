@@ -180,15 +180,6 @@ func (s *Scanner) insertComma(t *Token) {
 	}
 }
 
-func (s *Scanner) peek() rune {
-	ch := s.next()
-	if ch == eof {
-		return ch
-	}
-	s.back()
-	return ch
-}
-
 func (s *Scanner) back() {
 	err := s.r.UnreadRune()
 	if err != nil {
