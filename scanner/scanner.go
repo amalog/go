@@ -232,7 +232,7 @@ CH:
 				if prev < 'a' || prev > 'z' {
 					err := &SyntaxError{
 						Position: s.Pos(),
-						Message:  fmt.Sprintf("variable names may not have consecutive uppercase letters, got %c", ch),
+						Message:  fmt.Sprintf("variable names may not have consecutive uppercase letters"),
 					}
 					return nil, err
 				}
