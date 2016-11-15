@@ -222,27 +222,24 @@ CH:
 func (s *Scanner) scanVariable(ch rune) (*Token, error) {
 	chars := make([]rune, 0)
 
+	isPrevCharLowercase := true
 	pos := s.Pos()
 CH:
 	for {
 		switch {
 		case ch >= 'A' && ch <= 'Z':
-			if len(chars) > 0 {
-				prev := chars[len(chars)-1]
-				if prev < 'a' || prev > 'z' {
-					err := &SyntaxError{
-						Position: s.Pos(),
-						Message:  fmt.Sprintf("variable names may not have consecutive uppercase letters"),
-					}
-					return nil, err
+			if !isPrevCharLowercase {
+				err := &SyntaxError{
+					Position: s.Pos(),
+					Message:  fmt.Sprintf("variable names may not have consecutive uppercase letters"),
 				}
+				return nil, err
 			}
 			chars = append(chars, ch)
+			isPrevCharLowercase = false
 		case ch >= 'a' && ch <= 'z':
-			if len(chars) == 0 {
-				panic("called scanVariable without upper case letter next in stream")
-			}
 			chars = append(chars, ch)
+			isPrevCharLowercase = true
 		case ch == eof:
 			break CH
 		default:
