@@ -3,55 +3,41 @@ package term // import "github.com/amalog/go/term"
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 )
 
-func TestReader(t *testing.T) {
-	tests := map[string]string{
-		`hello,`: "hello\n",
-		`X,`:     "X\n",
+func TestFormat(t *testing.T) {
+	const base = "../tests/format"
 
-		`hello, bye,`: "hello\nbye\n",
-
-		// language does not expand \n inside strings
-		`"hello world\n",`: "\"hello world\\n\"\n",
-
-		`use("amalog.org/std/io",Io),`: "use(\"amalog.org/std/io\", Io)\n",
-
-		`Io.say(W,"Hello, world!"),`: "Io.say(W, \"Hello, world!\")\n",
-
-		`main(W) { hi(W), },`: "main(W) {\n    hi(W)\n}\n",
-
-		`foo() { bar() { baz, bye, }, },`: "foo {\n    bar {\n        baz\n        bye\n    }\n}\n",
-
-		// comma inserted for last term inside db
-		`foo{bar},`:      "foo {\n    bar\n}\n",
-		`foo{bar{hi,}},`: "foo {\n    bar {\n        hi\n    }\n}\n",
-
-		// comma inserted at newline and EOF
-		`hello`:        "hello\n",
-		`X`:            "X\n",
-		`hello, bye`:   "hello\nbye\n",
-		"hello\nbye":   "hello\nbye\n",
-		"foo{bar}\n":   "foo {\n    bar\n}\n",
-		"a(x)\nb{y}\n": "a(x)\nb {\n    y\n}\n",
-		"a\n\nb":       "a\nb\n",
-
-		`do { things, },`: "do {\n    things\n}\n",
-		`Loop.do { x, },`: "Loop.do {\n    x\n}\n",
-
-		// structs are different from atoms
-		`stuff(),`:   "stuff()\n",
-		`stuff{},`:   "stuff()\n",
-		`X.stuff(),`: "X.stuff()\n",
-		`X.stuff{},`: "X.stuff()\n",
-
-		`thing(a) {},`: "thing(a)\n",
-
-		"# etc etc\netc": "# etc etc\netc\n",
+	tests, err := ioutil.ReadDir(base)
+	if err != nil {
+		panic(err)
 	}
-	for amalog, expected := range tests {
+	for _, test := range tests {
+		// skip files
+		if !test.IsDir() {
+			continue
+		}
+
+		// fetch unformatted code
+		data, err := ioutil.ReadFile(base + "/" + test.Name() + "/before.ama")
+		if err != nil {
+			t.Errorf("can't read %s/before.ama: %s", test.Name(), err)
+			continue
+		}
+		amalog := string(data)
+
+		// fetch formatted code
+		data, err = ioutil.ReadFile(base + "/" + test.Name() + "/after.ama")
+		if err != nil {
+			t.Errorf("can't read %s/after.ama: %s", test.Name(), err)
+			continue
+		}
+		expected := string(data)
+
+		// generate and compare formatted output
 		ts, err := terms(amalog)
 		if err != nil {
 			t.Errorf("oops: %s\n%s", err, amalog)
@@ -63,7 +49,7 @@ func TestReader(t *testing.T) {
 		}
 		got := buf.String()
 		if got != expected {
-			t.Errorf("\ngot : %s\nwant: %s\n", got, expected)
+			t.Errorf("%s.ama:\ngot : %s\nwant: %s\n", test.Name(), got, expected)
 		}
 
 		// canonical source can be parsed
@@ -81,6 +67,31 @@ func TestReader(t *testing.T) {
 		rewritten := buf.String()
 		if rewritten != got {
 			t.Errorf("canonical is not canonical\ngot : %s\nwant: %s\n", rewritten, got)
+		}
+	}
+}
+
+func TestValid(t *testing.T) {
+	const base = "../tests/syntax/valid"
+
+	tests, err := ioutil.ReadDir(base)
+	if err != nil {
+		panic(err)
+	}
+	for _, test := range tests {
+		// fetch code
+		data, err := ioutil.ReadFile(base + "/" + test.Name())
+		if err != nil {
+			t.Errorf("can't read %s: %s", test.Name(), err)
+			continue
+		}
+		amalog := string(data)
+
+		// parse text
+		_, err = terms(amalog)
+		if err != nil {
+			t.Errorf("oops: %s\n%s", err, amalog)
+			return
 		}
 	}
 }

@@ -1,0 +1,2 @@
+# language does not expand \n inside strings
+"hello world\n"

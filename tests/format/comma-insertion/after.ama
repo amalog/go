@@ -1,0 +1,25 @@
+# comma inserted for last term inside db
+foo {
+    bar
+}
+foo {
+    bar {
+        hi
+    }
+}
+# comma inserted at newline and EOF
+hello
+X
+hello
+bye
+hello
+bye
+foo {
+    bar
+}
+a(x)
+b {
+    y
+}
+a
+b
