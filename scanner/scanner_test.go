@@ -54,7 +54,6 @@ func TestInvalid(t *testing.T) {
 		"abc {\n\tfoo\n}": `<input>:2:0: The tab character is prohibited`,
 		"abc {}\r\n":      `<input>:1:6: The carriage return character is prohibited`,
 		"\"hi":            `<input>:1:1: Runaway string`,
-		"ABC":             `<input>:1:2: variable names may not have consecutive uppercase letters`,
 	}
 	for amalog, expected := range tests {
 		_, err := tokens(amalog)

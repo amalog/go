@@ -60,11 +60,11 @@ func (r *Reader) Read() (Term, error) {
 		case scanner.Punct:
 			switch y.Text {
 			case terminator:
-				term := &Var{
-					Name:  x.Text,
-					Value: nil,
+				t, err := NewVar(x.Text)
+				if err != nil {
+					return nil, &Err{x, err.Error()}
 				}
-				return term, nil
+				return t, nil
 			case ".":
 				z, err := r.s.Scan()
 				if err != nil {
@@ -89,6 +89,14 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 		return nil, err
 	}
 
+	var contextVar *Var
+	if context != nil {
+		contextVar, err = NewVar(context.Text)
+		if err != nil {
+			return nil, &Err{context, err.Error()}
+		}
+	}
+
 	switch y.Class {
 	case scanner.Eof:
 		return nil, &ErrUnexpectedEof{r.s.Pos()}
@@ -108,11 +116,9 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 			}
 
 			t := &Struct{
-				Name: NewAtom(name.Text),
-				Args: NewSeq(args),
-			}
-			if context != nil {
-				t.Context = Var{Name: context.Text}
+				Context: contextVar,
+				Name:    NewAtom(name.Text),
+				Args:    NewSeq(args),
 			}
 
 			switch z.Class {
@@ -137,11 +143,9 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 			}
 
 			t := &Struct{
-				Name: NewAtom(name.Text),
-				Data: NewDb(data),
-			}
-			if context != nil {
-				t.Context = Var{Name: context.Text}
+				Context: contextVar,
+				Name:    NewAtom(name.Text),
+				Data:    NewDb(data),
 			}
 			return r.terminate(t)
 		}

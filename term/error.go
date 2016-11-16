@@ -28,5 +28,5 @@ type Err struct {
 }
 
 func (err *Err) Error() string {
-	return fmt.Sprintf("%s %s: %s", err.Token.Position, err.Message, err.Token)
+	return fmt.Sprintf("%s %s", err.Token.Position, err.Message)
 }

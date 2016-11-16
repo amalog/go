@@ -6,7 +6,7 @@ import (
 )
 
 type Struct struct {
-	Context Var
+	Context *Var
 	Name    Atom
 	Args    Seq
 	Data    Db
@@ -19,7 +19,7 @@ func (s *Struct) String() string {
 }
 
 func (s *Struct) Format(w io.Writer, style Style) {
-	if s.Context.Name != "" {
+	if s.Context != nil && s.Context.Name != "" {
 		io.WriteString(w, s.Context.Name)
 		io.WriteString(w, ".")
 	}
