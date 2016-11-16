@@ -2,13 +2,26 @@ package term // import "github.com/amalog/go/term"
 
 import (
 	"bytes"
+	"fmt"
 	"io"
+	"regexp"
 )
 
 type Atom string
 
-func NewAtom(s string) Atom {
-	return Atom(s)
+var okAtomName *regexp.Regexp
+
+func init() {
+	okAtomName = regexp.MustCompile(`^[a-z][a-z_]*$`)
+}
+
+func NewAtom(s string) (Atom, error) {
+	if okAtomName.MatchString(s) {
+		return Atom(s), nil
+	}
+
+	err := fmt.Errorf("invalid atom name: %s", s)
+	return "", err
 }
 
 func (a Atom) String() string {

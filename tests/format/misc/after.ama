@@ -1,7 +1,7 @@
 hello
 X
 hello
-bye
+good_bye
 use("amalog.org/std/io", Io)
 Io.say(W, "Hello, world!")
 main(W) {

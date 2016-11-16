@@ -97,13 +97,18 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 		}
 	}
 
+	nameTerm, err := NewAtom(name.Text)
+	if err != nil {
+		return nil, &Err{name, err.Error()}
+	}
+
 	switch y.Class {
 	case scanner.Eof:
 		return nil, &ErrUnexpectedEof{r.s.Pos()}
 	case scanner.Punct:
 		switch y.Text {
 		case terminator:
-			return NewAtom(name.Text), nil
+			return nameTerm, nil
 		case "(":
 			args, err := r.readSeq(y.Text) // consumes closing ')'
 			if err != nil {
@@ -117,7 +122,7 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 
 			t := &Struct{
 				Context: contextVar,
-				Name:    NewAtom(name.Text),
+				Name:    nameTerm,
 				Args:    NewSeq(args),
 			}
 
@@ -144,7 +149,7 @@ func (r *Reader) readAtomOrStruct(context, name *scanner.Token) (Term, error) {
 
 			t := &Struct{
 				Context: contextVar,
-				Name:    NewAtom(name.Text),
+				Name:    nameTerm,
 				Data:    NewDb(data),
 			}
 			return r.terminate(t)
