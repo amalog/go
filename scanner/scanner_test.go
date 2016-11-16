@@ -33,6 +33,8 @@ func TestScanner(t *testing.T) {
 
 		"foo\nbar": `[atom(foo) punct(,) atom(bar) punct(,)]`,
 		"a\n\nb":   `[atom(a) punct(,) atom(b) punct(,)]`,
+
+		"# line comment": `[comment(# line comment)]`,
 	}
 	for amalog, expected := range tests {
 		ts, err := tokens(amalog)

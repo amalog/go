@@ -48,6 +48,8 @@ func TestReader(t *testing.T) {
 		`X.stuff{},`: "X.stuff()\n",
 
 		`thing(a) {},`: "thing(a)\n",
+
+		"# etc etc\netc": "# etc etc\netc\n",
 	}
 	for amalog, expected := range tests {
 		ts, err := terms(amalog)

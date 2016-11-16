@@ -71,6 +71,8 @@ func (s *Scanner) scan() (*Token, error) {
 		} else if ch == ' ' { // space
 			s.skipSpace()
 			continue
+		} else if ch == '#' { // end of line comment
+			return s.scanEolComment(ch)
 		} else if ch == '\n' { // newline
 			return &Token{Class: nl, Position: s.Pos()}, nil
 		} else {
@@ -92,12 +94,15 @@ func (s *Scanner) insertComma(t *Token) {
 		return
 	}
 
-	// certain punctuation prohibits comma insertion
-	if s.prevToken.Class == Punct {
+	// certain tokens prohibit comma insertion
+	switch s.prevToken.Class {
+	case Punct:
 		switch s.prevToken.Text {
 		case ",", "(", "{":
 			return
 		}
+	case Comment:
+		return
 	}
 
 	switch t.Class {
@@ -288,12 +293,7 @@ CH:
 func (s *Scanner) scanString(ch rune) (*Token, error) {
 	chars := []rune{ch}
 
-	// consume opening quote character
 	pos := s.Pos()
-	if ch != '"' {
-		panic("scanString without a double quote character to start")
-	}
-
 	for {
 		ch = s.next()
 		chars = append(chars, ch)
@@ -310,6 +310,26 @@ func (s *Scanner) scanString(ch rune) (*Token, error) {
 
 	t := &Token{
 		Class:    String,
+		Position: pos,
+		Text:     string(chars),
+	}
+	return t, nil
+}
+
+func (s *Scanner) scanEolComment(ch rune) (*Token, error) {
+	chars := []rune{ch}
+
+	pos := s.Pos()
+	for {
+		ch = s.next()
+		if ch == '\n' || ch == eof {
+			break
+		}
+		chars = append(chars, ch)
+	}
+
+	t := &Token{
+		Class:    Comment,
 		Position: pos,
 		Text:     string(chars),
 	}

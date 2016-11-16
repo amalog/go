@@ -28,6 +28,12 @@ func (r *Reader) Read() (Term, error) {
 	switch x.Class {
 	case scanner.Atom:
 		return r.readAtomOrStruct(nil, x)
+	case scanner.Comment:
+		t, err := NewComment(x.Text[1:])
+		if err != nil {
+			panic(err)
+		}
+		return t, nil
 	case scanner.Eof:
 		return nil, io.EOF
 	case scanner.String:

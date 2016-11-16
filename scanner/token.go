@@ -12,6 +12,8 @@ const (
 
 	String Class = iota
 
+	Comment Class = iota
+
 	// classes used internally
 	nl Class = iota
 )
@@ -26,6 +28,8 @@ func (t *Token) String() string {
 	switch t.Class {
 	case Atom:
 		return fmt.Sprintf("atom(%s)", t.Text)
+	case Comment:
+		return fmt.Sprintf("comment(%s)", t.Text)
 	case Eof:
 		return "eof"
 	case Num:
