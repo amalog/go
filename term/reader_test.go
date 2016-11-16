@@ -97,24 +97,33 @@ func TestValid(t *testing.T) {
 }
 
 func TestInvalid(t *testing.T) {
-	tests := map[string]string{
-		`bah;`: `<input>:1:4 unexpected token: punct(;)`,
+	const base = "../tests/syntax/invalid"
 
-		`foo(`: `<input>:1:4 unexpected end of file`,
-		`foo{`: `<input>:1:4 unexpected end of file`,
-		`foo)`: `<input>:1:4 unexpected token: punct())`,
-		`foo}`: `<input>:1:4 unexpected token: punct(})`,
+	tests, err := ioutil.ReadDir(base)
+	if err != nil {
+		panic(err)
 	}
-	for amalog, expected := range tests {
+	for _, test := range tests {
+		// fetch code
+		data, err := ioutil.ReadFile(base + "/" + test.Name())
+		if err != nil {
+			t.Errorf("can't read %s: %s", test.Name(), err)
+			continue
+		}
+		amalog := string(data)
+		parts := strings.SplitN(amalog, "\n", 2)
+		expected := parts[0][2:]
+		amalog = parts[1]
+
 		x, err := terms(amalog)
 		if err == nil {
-			t.Errorf("no syntax error:\ngot : %s\nfrom: %s", x, amalog)
+			t.Errorf("no syntax error %s:\ngot : %s\nfrom: %s", test.Name(), x, amalog)
 			continue
 		}
 
 		got := err.Error()
 		if got != expected {
-			t.Errorf("\ngot : %s\nwant: %s\n%s", got, expected, amalog)
+			t.Errorf("%s:\ngot : %s\nwant: %s\n%s", test.Name(), got, expected, amalog)
 		}
 	}
 }
