@@ -2,8 +2,8 @@ package term // import "github.com/amalog/go/term"
 
 import (
 	"bytes"
-	"io"
 	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 )
@@ -21,16 +21,15 @@ func TestFormat(t *testing.T) {
 			continue
 		}
 
-		// fetch unformatted code
-		data, err := ioutil.ReadFile(base + "/" + test.Name() + "/before.ama")
+		// parse unformatted code
+		term, err := readFile(base + "/" + test.Name() + "/before.ama")
 		if err != nil {
 			t.Errorf("can't read %s/before.ama: %s", test.Name(), err)
 			continue
 		}
-		amalog := string(data)
 
 		// fetch formatted code
-		data, err = ioutil.ReadFile(base + "/" + test.Name() + "/after.ama")
+		data, err := ioutil.ReadFile(base + "/" + test.Name() + "/after.ama")
 		if err != nil {
 			t.Errorf("can't read %s/after.ama: %s", test.Name(), err)
 			continue
@@ -38,35 +37,30 @@ func TestFormat(t *testing.T) {
 		expected := string(data)
 
 		// generate and compare formatted output
-		ts, err := terms(amalog)
+		got, err := asFileString(term)
 		if err != nil {
-			t.Errorf("oops: %s\n%s", err, amalog)
-			return
+			t.Errorf("trouble writing: %s", err)
+			continue
 		}
-		var buf bytes.Buffer
-		for _, term := range ts {
-			buf.WriteString(term.String())
-		}
-		got := buf.String()
 		if got != expected {
 			t.Errorf("%s.ama:\ngot : %s\nwant: %s\n", test.Name(), got, expected)
 		}
 
 		// canonical source can be parsed
-		ts, err = terms(got)
+		term, err = ReadAll(strings.NewReader(got))
 		if err != nil {
-			t.Errorf("can't parse canonical source: %s\n%s", err, amalog)
-			return
+			t.Errorf("can't parse canonical source: %s\n%s", err, term)
+			continue
 		}
 
 		// formatting it again gives the same result
-		buf = bytes.Buffer{}
-		for _, term := range ts {
-			buf.WriteString(term.String())
+		rewritten, err := asFileString(term)
+		if err != nil {
+			t.Errorf("trouble writing: %s", err)
+			continue
 		}
-		rewritten := buf.String()
-		if rewritten != got {
-			t.Errorf("canonical is not canonical\ngot : %s\nwant: %s\n", rewritten, got)
+		if rewritten != expected {
+			t.Errorf("canonical is not canonical\ngot : %s\nwant: %s\n", rewritten, expected)
 		}
 	}
 }
@@ -79,19 +73,10 @@ func TestValid(t *testing.T) {
 		panic(err)
 	}
 	for _, test := range tests {
-		// fetch code
-		data, err := ioutil.ReadFile(base + "/" + test.Name())
+		_, err = readFile(base + "/" + test.Name())
 		if err != nil {
-			t.Errorf("can't read %s: %s", test.Name(), err)
+			t.Errorf("oops: %s", err)
 			continue
-		}
-		amalog := string(data)
-
-		// parse text
-		_, err = terms(amalog)
-		if err != nil {
-			t.Errorf("oops: %s\n%s", err, amalog)
-			return
 		}
 	}
 }
@@ -111,16 +96,18 @@ func TestInvalid(t *testing.T) {
 			continue
 		}
 		amalog := string(data)
+
+		// comment on first line is the expected error message
 		parts := strings.SplitN(amalog, "\n", 2)
 		expected := parts[0][2:]
 		amalog = parts[1]
 
-		x, err := terms(amalog)
+		// parsing should give the expected message
+		x, err := ReadAll(strings.NewReader(amalog))
 		if err == nil {
 			t.Errorf("no syntax error %s:\ngot : %s\nfrom: %s", test.Name(), x, amalog)
 			continue
 		}
-
 		got := err.Error()
 		if got != expected {
 			t.Errorf("%s:\ngot : %s\nwant: %s\n%s", test.Name(), got, expected, amalog)
@@ -128,20 +115,20 @@ func TestInvalid(t *testing.T) {
 	}
 }
 
-func terms(text string) ([]Term, error) {
-	terms := make([]Term, 0)
-
-	r := NewReader(strings.NewReader(text))
-	for {
-		t, err := r.Read()
-		if err == io.EOF {
-			return terms, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-		terms = append(terms, t)
+func readFile(filename string) (Term, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
 	}
+	defer file.Close()
+	return ReadAll(file)
+}
 
-	return nil, nil
+func asFileString(t Term) (string, error) {
+	buf := new(bytes.Buffer)
+	err := WriteAll(buf, t)
+	if err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }

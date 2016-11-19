@@ -2,6 +2,7 @@ package term // import "github.com/amalog/go/term"
 
 import (
 	"bufio"
+	"errors"
 	"io"
 
 	"github.com/amalog/go/scanner"
@@ -24,6 +25,47 @@ func NewReader(r io.Reader) *Reader {
 	self := new(Reader)
 	self.s = scanner.New(rs)
 	return self
+}
+
+// ReadAll reads all content as a single, top level term.  The term's name is
+// "amalog".  All terms read from the content are in its db.
+func ReadAll(r io.Reader) (Term, error) {
+	reader := NewReader(r)
+	terms := make([]Term, 0)
+	for {
+		t, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		terms = append(terms, t)
+	}
+
+	name, err := NewAtom("amalog")
+	if err != nil {
+		panic(err) // "amalog" should always be a valid atom
+	}
+	t := &Struct{
+		Name: name,
+		Data: NewDb(terms),
+	}
+	return t, nil
+}
+
+// WriteAll writes a term as if it were a top level term.  The term must be a
+// struct.  Its name is ignored.  See ReadAll.
+func WriteAll(w io.Writer, t Term) error {
+	if s, ok := t.(*Struct); ok {
+		style := Style{}
+		for _, term := range s.Data {
+			term.Format(w, style)
+		}
+		return nil
+	} else {
+		return errors.New("WriteFile can only output a struct term")
+	}
 }
 
 func (r *Reader) Read() (Term, error) {
