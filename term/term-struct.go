@@ -10,6 +10,12 @@ type Struct struct {
 }
 
 func (s *Struct) Format(w io.Writer, style Style) {
+	if style.IsRoot {
+		style.Indent = 0
+		s.Data.Format(w, style)
+		return
+	}
+
 	if s.Context != nil && s.Context.Name != "" {
 		io.WriteString(w, s.Context.Name)
 		io.WriteString(w, ".")

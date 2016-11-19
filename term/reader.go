@@ -27,7 +27,7 @@ func NewReader(r io.Reader) *Reader {
 	return self
 }
 
-// ReadAll reads all content as a single, top level term.  The term's name is
+// ReadAll reads all content as a single, root term.  The term's name is
 // "amalog".  All terms read from the content are in its db.
 func ReadAll(r io.Reader) (Term, error) {
 	reader := NewReader(r)
@@ -54,24 +54,15 @@ func ReadAll(r io.Reader) (Term, error) {
 	return t, nil
 }
 
-// WriteAll writes a term as if it were a top level term.  The term must be a
+// WriteAll writes a term as if it were a root term.  The term must be a
 // struct.  Its name is ignored.  See ReadAll.
 func WriteAll(w io.Writer, t Term) error {
-	if s, ok := t.(*Struct); ok {
-		style := Style{}
-		prevName := "#" // won't impose extra newlines
-		for _, term := range s.Data {
-			name := Name(term)
-			if prevName != "#" && prevName != name {
-				io.WriteString(w, "\n")
-			}
-			term.Format(w, style)
-			prevName = name
-		}
+	if _, ok := t.(*Struct); ok {
+		style := Style{IsRoot: true}
+		t.Format(w, style)
 		return nil
-	} else {
-		return errors.New("WriteFile can only output a struct term")
 	}
+	return errors.New("WriteFile can only output a struct term")
 }
 
 func (r *Reader) Read() (Term, error) {

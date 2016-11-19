@@ -13,6 +13,11 @@ type Style struct {
 	// Indent indicates the number of levels of indentation that should be applied
 	// before the term is displayed.
 	Indent int
+
+	// IsRoot should be set to true if this term should be displayed as if it
+	// represents the root term of an Amalog file.  That is, the term represents
+	// the entire contents of the file.
+	IsRoot bool
 }
 
 // WriteIndent writes the appropriate amount of indentation for this style.
