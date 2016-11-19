@@ -265,8 +265,14 @@ func (s *Scanner) scanEolComment(ch rune) (*Token, error) {
 	pos := s.Pos()
 	for {
 		ch = s.next()
-		if ch == '\n' || ch == eof {
+		if ch == '\n' {
 			break
+		}
+		if ch == eof {
+			return nil, &SyntaxError{
+				Position: pos,
+				Message:  "File missing final newline",
+			}
 		}
 		chars = append(chars, ch)
 	}

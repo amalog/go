@@ -34,7 +34,7 @@ func TestScanner(t *testing.T) {
 		"foo\nbar": `[atom(foo) punct(,) atom(bar) punct(,)]`,
 		"a\n\nb":   `[atom(a) punct(,) atom(b) punct(,)]`,
 
-		"# line comment": `[comment( line comment)]`,
+		"# line comment\n": `[comment( line comment)]`,
 	}
 	for amalog, expected := range tests {
 		ts, err := tokens(amalog)
@@ -54,6 +54,7 @@ func TestInvalid(t *testing.T) {
 		"abc {\n\tfoo\n}": `<input>:2:0: The tab character is prohibited`,
 		"abc {}\r\n":      `<input>:1:6: The carriage return character is prohibited`,
 		"\"hi":            `<input>:1:1: Runaway string`,
+		"# eof comment":   `<input>:1:1: File missing final newline`,
 	}
 	for amalog, expected := range tests {
 		_, err := tokens(amalog)
