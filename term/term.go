@@ -18,14 +18,6 @@ type Term interface {
 
 type Number *big.Rat
 
-func IsGround(t Term) bool {
-	return false
-}
-
-func TermFromBigRat(x *big.Rat) Term {
-	return nil
-}
-
 // Name returns a name for an arbitrary term.  It's easiest to understand
 // by example:
 //
