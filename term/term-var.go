@@ -1,7 +1,6 @@
 package term // import "github.com/amalog/go/term"
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"regexp"
@@ -24,12 +23,6 @@ func NewVar(name string) (*Var, error) {
 		return nil, err
 	}
 	return &Var{Name: name}, nil
-}
-
-func (v *Var) String() string {
-	buf := new(bytes.Buffer)
-	v.Format(buf, Style{})
-	return buf.String()
 }
 
 func (v *Var) Format(w io.Writer, style Style) {

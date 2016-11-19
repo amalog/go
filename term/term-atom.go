@@ -1,7 +1,6 @@
 package term // import "github.com/amalog/go/term"
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"regexp"
@@ -22,12 +21,6 @@ func NewAtom(s string) (Atom, error) {
 
 	err := fmt.Errorf("invalid atom name: %s", s)
 	return "", err
-}
-
-func (a Atom) String() string {
-	buf := new(bytes.Buffer)
-	a.Format(buf, Style{})
-	return buf.String()
 }
 
 func (a Atom) Format(w io.Writer, style Style) {
