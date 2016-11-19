@@ -60,11 +60,11 @@ func (s *Scanner) scan() (*Token, error) {
 		}
 
 		if ch >= 'a' && ch <= 'z' { // atom
-			return s.scanAtom(ch)
+			return s.scanToken(Atom, isAtomRune, ch)
 		} else if ch >= 'A' && ch <= 'Z' { // variable
-			return s.scanVariable(ch)
+			return s.scanToken(Var, isVarRune, ch)
 		} else if ch >= '0' && ch <= '9' { // number
-			return s.scanNumber(ch)
+			return s.scanToken(Num, isNumRune, ch)
 		} else if ch == '"' { // string
 			return s.scanString(ch)
 		} else if ch == ' ' { // space
@@ -195,68 +195,25 @@ func (s *Scanner) skipSpace() {
 	}
 }
 
-func (s *Scanner) scanAtom(ch rune) (*Token, error) {
-	chars := make([]rune, 0)
-
-	pos := s.Pos()
-CH:
-	for {
-		switch {
-		case ch >= 'a' && ch <= 'z', ch == '_':
-			chars = append(chars, ch)
-		case ch == eof:
-			break CH
-		default:
-			s.back()
-			break CH
-		}
-
-		ch = s.next()
-	}
-
-	t := &Token{
-		Class:    Atom,
-		Position: pos,
-		Text:     string(chars),
-	}
-	return t, nil
+func isAtomRune(ch rune) bool {
+	return (ch >= 'a' && ch <= 'z') || ch == '_'
 }
 
-func (s *Scanner) scanVariable(ch rune) (*Token, error) {
-	chars := make([]rune, 0)
-
-	pos := s.Pos()
-CH:
-	for {
-		switch {
-		case ch >= 'A' && ch <= 'Z', ch >= 'a' && ch <= 'z':
-			chars = append(chars, ch)
-		case ch == eof:
-			break CH
-		default:
-			s.back()
-			break CH
-		}
-
-		ch = s.next()
-	}
-
-	t := &Token{
-		Class:    Var,
-		Position: pos,
-		Text:     string(chars),
-	}
-	return t, nil
+func isVarRune(ch rune) bool {
+	return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')
 }
 
-func (s *Scanner) scanNumber(ch rune) (*Token, error) {
-	chars := make([]rune, 0)
+func isNumRune(ch rune) bool {
+	return (ch >= '0' && ch <= '9') || ch == '_' || ch == '.'
+}
 
+func (s *Scanner) scanToken(class Class, isAllowed func(rune) bool, ch rune) (*Token, error) {
+	chars := make([]rune, 0)
 	pos := s.Pos()
 CH:
 	for {
 		switch {
-		case ch >= '0' && ch <= '9', ch == '_', ch == '.':
+		case isAllowed(ch):
 			chars = append(chars, ch)
 		case ch == eof:
 			break CH
@@ -269,7 +226,7 @@ CH:
 	}
 
 	t := &Token{
-		Class:    Num,
+		Class:    class,
 		Position: pos,
 		Text:     string(chars),
 	}
