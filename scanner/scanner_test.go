@@ -23,13 +23,13 @@ func TestScanner(t *testing.T) {
 
 		`foo{bar}`: `[atom(foo) punct({) atom(bar) punct(,) punct(}) punct(,)]`,
 
-		`"hello world\n"`: `[string("hello world\n") punct(,)]`,
+		`"hello world\n"`: `[string(hello world\n) punct(,)]`,
 
-		`use("amalog.org/std/io", Io),`: `[atom(use) punct(() string("amalog.org/std/io") punct(,) var(Io) punct(,) punct()) punct(,)]`,
+		`use("amalog.org/std/io", Io),`: `[atom(use) punct(() string(amalog.org/std/io) punct(,) var(Io) punct(,) punct()) punct(,)]`,
 
 		`main(W) {`: `[atom(main) punct(() var(W) punct(,) punct()) punct({)]`,
 
-		`Io.printf(W, "Hello, world!\n"),`: `[var(Io) punct(.) atom(printf) punct(() var(W) punct(,) string("Hello, world!\n") punct(,) punct()) punct(,)]`,
+		`Io.printf(W, "Hello, world!\n"),`: `[var(Io) punct(.) atom(printf) punct(() var(W) punct(,) string(Hello, world!\n) punct(,) punct()) punct(,)]`,
 
 		"foo\nbar": `[atom(foo) punct(,) atom(bar) punct(,)]`,
 		"a\n\nb":   `[atom(a) punct(,) atom(b) punct(,)]`,

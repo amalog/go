@@ -37,18 +37,7 @@ func (r *Reader) Read() (Term, error) {
 	case scanner.Eof:
 		return nil, io.EOF
 	case scanner.String:
-		if len(x.Text) < 2 {
-			return nil, &Err{x, "string token too short"}
-		}
-		if x.Text[0] != '"' {
-			return nil, &Err{x, "string missing opening quote"}
-		}
-		if x.Text[len(x.Text)-1] != '"' {
-			return nil, &Err{x, "string missing closing quote"}
-		}
-		text := x.Text[1 : len(x.Text)-1]
-
-		t := NewString(text)
+		t := NewString(x.Text)
 		return r.terminate(t)
 	case scanner.Var:
 		y, err := r.s.Scan()

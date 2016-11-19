@@ -234,12 +234,11 @@ CH:
 }
 
 func (s *Scanner) scanString(ch rune) (*Token, error) {
-	chars := []rune{ch}
+	chars := []rune{}
 
 	pos := s.Pos()
 	for {
 		ch = s.next()
-		chars = append(chars, ch)
 		if ch == '"' {
 			break
 		}
@@ -249,6 +248,7 @@ func (s *Scanner) scanString(ch rune) (*Token, error) {
 				Message:  "Runaway string",
 			}
 		}
+		chars = append(chars, ch)
 	}
 
 	t := &Token{
