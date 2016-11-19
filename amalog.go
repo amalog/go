@@ -60,23 +60,14 @@ func (ama *Amalog) CmdFormat(filename string) int {
 		fmt.Fprintf(ama.Err, "%s\n", err)
 		return 1
 	}
-	buf := bufio.NewReader(file)
 
 	// read and output terms
-	style := term.Style{}
-	reader := term.NewReader(buf)
-	for {
-		t, err := reader.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			fmt.Fprintf(ama.Err, "read: %s", err)
-			return 1
-		}
-
-		t.Format(ama.Out, style)
+	style := term.Style{IsRoot: true}
+	t, err := term.ReadAll(file)
+	if err != nil {
+		fmt.Fprintf(ama.Err, "read: %s", err)
+		return 1
 	}
-
+	t.Format(ama.Out, style)
 	return 0
 }
