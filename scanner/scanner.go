@@ -66,12 +66,12 @@ func (s *Scanner) scan() (*Token, error) {
 		} else if ch >= '0' && ch <= '9' { // number
 			return s.scanToken(Num, isNumRune, ch)
 		} else if ch == '"' { // string
-			return s.scanString(ch)
+			return s.scanString(String, '"', "Runaway string")
 		} else if ch == ' ' { // space
 			s.skipSpace()
 			continue
 		} else if ch == '#' { // end of line comment
-			return s.scanEolComment(ch)
+			return s.scanString(Comment, '\n', "File missing final newline")
 		} else if ch == '\n' { // newline
 			return &Token{Class: nl, Position: s.Pos()}, nil
 		} else {
@@ -233,52 +233,25 @@ CH:
 	return t, nil
 }
 
-func (s *Scanner) scanString(ch rune) (*Token, error) {
+func (s *Scanner) scanString(class Class, close rune, oops string) (*Token, error) {
 	chars := []rune{}
-
 	pos := s.Pos()
 	for {
-		ch = s.next()
-		if ch == '"' {
+		ch := s.next()
+		if ch == close {
 			break
 		}
 		if ch == eof {
 			return nil, &SyntaxError{
 				Position: pos,
-				Message:  "Runaway string",
+				Message:  oops,
 			}
 		}
 		chars = append(chars, ch)
 	}
 
 	t := &Token{
-		Class:    String,
-		Position: pos,
-		Text:     string(chars),
-	}
-	return t, nil
-}
-
-func (s *Scanner) scanEolComment(ch rune) (*Token, error) {
-	chars := []rune{}
-
-	pos := s.Pos()
-	for {
-		ch = s.next()
-		if ch == '\n' {
-			break
-		}
-		if ch == eof {
-			return nil, &SyntaxError{
-				Position: pos,
-				Message:  "File missing final newline",
-			}
-		}
-		chars = append(chars, ch)
-	}
-
-	t := &Token{
-		Class:    Comment,
+		Class:    class,
 		Position: pos,
 		Text:     string(chars),
 	}
