@@ -260,7 +260,7 @@ func (s *Scanner) scanString(ch rune) (*Token, error) {
 }
 
 func (s *Scanner) scanEolComment(ch rune) (*Token, error) {
-	chars := []rune{ch}
+	chars := []rune{}
 
 	pos := s.Pos()
 	for {

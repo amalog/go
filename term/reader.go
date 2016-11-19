@@ -29,7 +29,7 @@ func (r *Reader) Read() (Term, error) {
 	case scanner.Atom:
 		return r.readAtomOrStruct(nil, x)
 	case scanner.Comment:
-		t, err := NewComment(x.Text[1:])
+		t, err := NewComment(x.Text)
 		if err != nil {
 			panic(err)
 		}
