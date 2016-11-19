@@ -59,8 +59,14 @@ func ReadAll(r io.Reader) (Term, error) {
 func WriteAll(w io.Writer, t Term) error {
 	if s, ok := t.(*Struct); ok {
 		style := Style{}
+		prevName := "#" // won't impose extra newlines
 		for _, term := range s.Data {
+			name := Name(term)
+			if prevName != "#" && prevName != name {
+				io.WriteString(w, "\n")
+			}
 			term.Format(w, style)
+			prevName = name
 		}
 		return nil
 	} else {

@@ -24,3 +24,7 @@ func (s String) Format(w io.Writer, style Style) {
 
 	style.Terminate(w)
 }
+
+func (s String) Name() string {
+	return `""`
+}

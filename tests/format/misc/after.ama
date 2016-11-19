@@ -1,27 +1,37 @@
 hello
+
 X
+
 hello
+
 good_bye
+
 use("amalog.org/std/io", Io)
+
 Io.say(W, "Hello, world!")
+
 main(W) {
     hi(W)
 }
+
 foo {
     bar {
         baz
         bye
     }
 }
+
 do {
     things
 }
 Loop.do {
     x
 }
+
 # structs are different from atoms
 stuff()
 stuff()
 X.stuff()
 X.stuff()
+
 thing(a)

@@ -7,19 +7,29 @@ foo {
         hi
     }
 }
+
 # comma inserted at newline and EOF
 hello
+hello
+
+bye
+
 X
+
 hello
+
 bye
-hello
-bye
+
 foo {
     bar
 }
+
 a(x)
+
 b {
     y
 }
+
 a
+
 b

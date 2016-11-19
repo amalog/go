@@ -4,8 +4,8 @@ foo{bar{hi,}},
 
 # comma inserted at newline and EOF
 hello
-X
 hello, bye
+X
 
 hello
 bye

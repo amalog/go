@@ -27,3 +27,7 @@ func (s Comment) Format(w io.Writer, style Style) {
 	io.WriteString(w, string(s))
 	io.WriteString(w, "\n")
 }
+
+func (s Comment) Name() string {
+	return "#"
+}

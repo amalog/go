@@ -3,6 +3,7 @@ package term // import "github.com/amalog/go/term"
 import (
 	"io"
 	"math/big"
+	"reflect"
 )
 
 type Term interface {
@@ -23,4 +24,38 @@ func IsGround(t Term) bool {
 
 func TermFromBigRat(x *big.Rat) Term {
 	return nil
+}
+
+// Name returns a name for an arbitrary term.  It's easiest to understand
+// by example:
+//
+//   * foo -> foo
+//   * bar(x,y,z) -> bar
+//   * # comment -> #
+//   * "hi" -> ""
+//
+// A term implemented outside this package can choose its own name by
+// implementing a `Name() string` method or having a public `Name string` field
+// (if it's a struct). Otherwise, the name is "<unknown>".
+func Name(t Term) string {
+	type hasName interface {
+		Name() string
+	}
+	if hasName, ok := t.(hasName); ok {
+		return hasName.Name()
+	}
+
+	val := reflect.ValueOf(t)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	if val.Kind() == reflect.Struct {
+		if field := val.FieldByName("Name"); field.IsValid() {
+			if field.Kind() == reflect.String {
+				return field.String()
+			}
+		}
+	}
+	panic("bah!")
+	return "<unknown>" // make compiler happy
 }
