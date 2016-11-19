@@ -229,9 +229,7 @@ func (s *Scanner) scanVariable(ch rune) (*Token, error) {
 CH:
 	for {
 		switch {
-		case ch >= 'A' && ch <= 'Z':
-			chars = append(chars, ch)
-		case ch >= 'a' && ch <= 'z':
+		case ch >= 'A' && ch <= 'Z', ch >= 'a' && ch <= 'z':
 			chars = append(chars, ch)
 		case ch == eof:
 			break CH
