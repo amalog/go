@@ -10,8 +10,7 @@ const eof rune = -1
 type Scanner struct {
 	r io.RuneScanner
 
-	filename string
-	err      *SyntaxError
+	err *SyntaxError
 
 	line       int
 	column     int
@@ -178,9 +177,8 @@ func (s *Scanner) prohibitedCharacter(ch rune) *SyntaxError {
 
 func (s *Scanner) Pos() Position {
 	return Position{
-		Filename: s.filename,
-		Line:     s.line,
-		Column:   s.column,
+		Line:   s.line,
+		Column: s.column,
 	}
 }
 
