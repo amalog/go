@@ -1,6 +1,7 @@
 package term // import "github.com/amalog/go/term"
 
 import (
+	"bufio"
 	"io"
 
 	"github.com/amalog/go/scanner"
@@ -13,9 +14,15 @@ type Reader struct {
 	s *scanner.Scanner
 }
 
-func NewReader(r io.RuneScanner) *Reader {
+func NewReader(r io.Reader) *Reader {
+	var rs io.RuneScanner
+	if x, ok := r.(io.RuneScanner); ok {
+		rs = x
+	} else {
+		rs = bufio.NewReader(r)
+	}
 	self := new(Reader)
-	self.s = scanner.New(r)
+	self.s = scanner.New(rs)
 	return self
 }
 
