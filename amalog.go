@@ -15,12 +15,30 @@ type Amalog struct {
 	Err io.Writer
 }
 
+// TODO most of this should be rewritten in Amalog so that it doesn't
+// TODO have to be recreated in each implementation.
 func (ama *Amalog) Run(args []string) int {
 	if len(args) == 0 {
 		return ama.CmdRepl()
 	}
 
-	return ama.CmdFormat(args[0])
+	// run an Amalog script
+	if _, err := os.Stat(args[0]); err == nil {
+		return ama.CmdRun(args[0])
+	}
+
+	// subcommands
+	switch args[0] {
+	case "format":
+		if len(args) < 2 {
+			fmt.Fprintln(ama.Err, "format command needs a file argument")
+			return 1
+		}
+		return ama.CmdFormat(args[1])
+	default:
+		fmt.Fprintf(ama.Err, "Unrecognized command: %s", args[0])
+		return 1
+	}
 }
 
 func (ama *Amalog) CmdRepl() int {
@@ -51,6 +69,10 @@ func (ama *Amalog) CmdRepl() int {
 		}
 	}
 	return 0
+}
+
+func (ama *Amalog) CmdRun(filename string) int {
+	return 1
 }
 
 func (ama *Amalog) CmdFormat(filename string) int {

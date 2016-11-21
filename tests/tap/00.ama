@@ -1,0 +1,6 @@
+use("amalog.org/std/io", Io)
+
+main(W) {
+    Io.say(W, "1..1")
+    Io.say(W, "ok 1 - hello from Amalog")
+}
