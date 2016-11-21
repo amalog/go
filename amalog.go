@@ -35,6 +35,12 @@ func (ama *Amalog) Run(args []string) int {
 			return 1
 		}
 		return ama.CmdFormat(args[1])
+	case "run":
+		if len(args) < 2 {
+			fmt.Fprintln(ama.Err, "run command needs a file argument")
+			return 1
+		}
+		return ama.CmdRun(args[1])
 	default:
 		fmt.Fprintf(ama.Err, "Unrecognized command: %s", args[0])
 		return 1
@@ -72,7 +78,15 @@ func (ama *Amalog) CmdRepl() int {
 }
 
 func (ama *Amalog) CmdRun(filename string) int {
-	return 1
+	m := NewMachine()
+	err := m.LoadFile(filename)
+	if err != nil {
+		fmt.Fprintf(ama.Err, "%s\n", err)
+		return 1
+	}
+	result := m.Call("main", World)
+	_ = result
+	return 0
 }
 
 func (ama *Amalog) CmdFormat(filename string) int {
