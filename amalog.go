@@ -84,12 +84,12 @@ func (ama *Amalog) CmdFormat(filename string) int {
 	}
 
 	// read and output terms
-	style := term.Style{IsRoot: true}
 	t, err := term.ReadAll(file)
 	if err != nil {
 		fmt.Fprintf(ama.Err, "read: %s", err)
 		return 1
 	}
+	style := term.Style{IsRoot: true}
 	t.Format(ama.Out, style)
 	return 0
 }
