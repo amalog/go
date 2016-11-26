@@ -1,7 +1,6 @@
 package amalog // import "github.com/amalog/go"
 
 import (
-	"io"
 	"os"
 
 	"github.com/amalog/go/term"
@@ -15,19 +14,20 @@ func NewMachine() *Machine {
 	return &Machine{}
 }
 
-func (m *Machine) LoadFile(filename string) error {
+// LoadRoot populates the machine's root term with the contents of a file
+// and loads all of that term's module dependencies.
+func (m *Machine) LoadRoot(filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return err
 	}
 
-	return m.Load(file)
-}
+	m.root, err = term.ReadAll(file)
+	if err != nil {
+		return err
+	}
 
-func (m *Machine) Load(r io.Reader) error {
-	var err error
-	m.root, err = term.ReadAll(r)
-	return err
+	return nil
 }
 
 func (m *Machine) Call(name string, args ...term.Term) *Result {

@@ -79,7 +79,7 @@ func (ama *Amalog) CmdRepl() int {
 
 func (ama *Amalog) CmdRun(filename string) int {
 	m := NewMachine()
-	err := m.LoadFile(filename)
+	err := m.LoadRoot(filename)
 	if err != nil {
 		fmt.Fprintf(ama.Err, "%s\n", err)
 		return 1
