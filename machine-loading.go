@@ -1,5 +1,6 @@
 package amalog // import "github.com/amalog/go"
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -81,6 +82,31 @@ type dependency struct {
 	variable *term.Var
 }
 
+// return module dependencies for a given term
+func dependencies(t term.Term) ([]*dependency, error) {
+	ds := make([]*dependency, 0)
+
+	for _, clause := range term.Clauses(t) {
+		if term.Arity(clause) == 2 && term.Name(clause) == "use" {
+			name, ok := term.Arg(clause, 1).(term.String)
+			if !ok {
+				return nil, fmt.Errorf("in use/2, expected string as first argument got: %s", term.Arg(clause, 1))
+			}
+			variable, ok := term.Arg(clause, 2).(*term.Var)
+			if !ok {
+				return nil, fmt.Errorf("in use/2, expected var as second argument got: %s", term.Arg(clause, 2))
+			}
+			d := &dependency{
+				name:     string(name),
+				variable: variable,
+			}
+			ds = append(ds, d)
+		}
+	}
+
+	return ds, nil
+}
+
 type loadJob struct {
 	*dependency
 }
@@ -108,7 +134,10 @@ func (m *Machine) loadDependencies(path []string) error {
 	outgoing := jobsCh // alias so we can disable the associated select clause
 
 	// traverse dependency graph, loading modules as we go
-	needToLoad := make([]*dependency, 0)
+	needToLoad, err := dependencies(m.root)
+	if err != nil {
+		return err
+	}
 	duplicates := make([]*dependency, 0)
 	isLoading := make(map[string]bool)
 	alreadyLoaded := make(map[string]term.Term)
