@@ -166,6 +166,11 @@ func loadWorker(
 			return
 		case job := <-jobsCh:
 			_ = job
+			resultsCh <- &loadResult{
+				name:         job.name,
+				t:            nil,
+				dependencies: []*dependency{},
+			}
 		}
 	}
 }
