@@ -1,8 +1,10 @@
 package amalog // import "github.com/amalog/go"
 
 import (
+	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/amalog/go/term"
 )
@@ -33,7 +35,12 @@ func (m *Machine) LoadRoot(filename string) error {
 	if err != nil {
 		return err
 	}
-	_ = modulePath
+
+	// load dependencies needed by the root term
+	err = m.loadDependencies(modulePath)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -80,4 +87,96 @@ func (m *Machine) modulePath(src string) ([]string, error) {
 	}
 
 	return paths, nil
+}
+
+type dependency struct {
+	name     string
+	variable *term.Var
+}
+
+type loadJob struct {
+	*dependency
+}
+
+type loadResult struct {
+	name         string
+	t            term.Term
+	dependencies []*dependency
+	err          error
+}
+
+// loadDependencies resolves all of the root term's dependency variables into
+// actual terms.  It does the same thing, recursively, for those dependencies.
+func (m *Machine) loadDependencies(path []string) error {
+	workerCount := runtime.NumCPU()
+
+	// create worker goroutines
+	doneCh := make(chan struct{})
+	defer close(doneCh)
+	jobsCh := make(chan *loadJob)
+	resultsCh := make(chan *loadResult)
+	for i := 0; i < workerCount; i++ {
+		go loadWorker(path, doneCh, jobsCh, resultsCh)
+	}
+	outgoing := jobsCh // alias so we can disable the associated select clause
+
+	// traverse dependency graph, loading modules as we go
+	needToLoad := make([]*dependency, 0)
+	duplicates := make([]*dependency, 0)
+	isLoading := make(map[string]bool)
+	alreadyLoaded := make(map[string]term.Term)
+	i := 0
+	for i < len(needToLoad) || len(isLoading) > 0 {
+		var job *loadJob
+		if i < len(needToLoad) {
+			d := needToLoad[i]
+			if _, ok := alreadyLoaded[d.name]; ok || isLoading[d.name] {
+				duplicates = append(duplicates, d)
+				i++
+				continue
+			}
+			job = &loadJob{d}
+			outgoing = jobsCh // enable select clause
+		} else {
+			outgoing = nil // disable select clause
+		}
+
+		select {
+		case outgoing <- job:
+			isLoading[job.name] = true
+			i++
+		case result := <-resultsCh:
+			if result.err != nil {
+				return result.err
+			}
+			alreadyLoaded[result.name] = result.t
+			delete(isLoading, result.name)
+			needToLoad = append(needToLoad, result.dependencies...)
+		}
+	}
+
+	// bind variables for all duplicates
+	for _, d := range duplicates {
+		t, ok := alreadyLoaded[d.name]
+		if !ok {
+			log.Panicf("processing duplicate that hasn't been loaded: %#v", d)
+		}
+		d.variable.Value = t
+	}
+
+	return nil
+}
+
+func loadWorker(
+	path []string,
+	doneCh <-chan struct{},
+	jobsCh <-chan *loadJob,
+	resultsCh chan<- *loadResult,
+) {
+	for {
+		select {
+		case <-doneCh:
+			return
+		}
+	}
 }

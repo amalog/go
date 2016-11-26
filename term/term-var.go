@@ -8,7 +8,7 @@ import (
 
 type Var struct {
 	Name  string
-	Value *Term
+	Value Term // nil to indicate unbound variable
 }
 
 var consecutiveCapitals *regexp.Regexp
