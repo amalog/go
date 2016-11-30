@@ -17,6 +17,9 @@ func NewComment(s string) (Comment, error) {
 
 func (s Comment) Format(w io.Writer, style Style) {
 	io.WriteString(w, "#")
+	if !strings.HasPrefix(string(s), " ") {
+		io.WriteString(w, " ")
+	}
 	io.WriteString(w, string(s))
 	io.WriteString(w, "\n")
 }

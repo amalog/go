@@ -1,0 +1,4 @@
+#eol comments should have a leading space
+# already has a leading space
+
+# adjacent eol comments are joined together
