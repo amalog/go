@@ -47,7 +47,7 @@ func TestFormat(t *testing.T) {
 		}
 
 		// canonical source can be parsed
-		term, err = ReadAll(strings.NewReader(got))
+		term, err = ReadAllAsTerm(strings.NewReader(got))
 		if err != nil {
 			t.Errorf("can't parse canonical source: %s\n%s", err, term)
 			continue
@@ -103,7 +103,7 @@ func TestInvalid(t *testing.T) {
 		amalog = parts[1]
 
 		// parsing should give the expected message
-		x, err := ReadAll(strings.NewReader(amalog))
+		x, err := ReadAllAsTerm(strings.NewReader(amalog))
 		if err == nil {
 			t.Errorf("no syntax error %s:\ngot : %s\nfrom: %s", test.Name(), x, amalog)
 			continue
@@ -121,7 +121,7 @@ func readFile(filename string) (Term, error) {
 		return nil, err
 	}
 	defer file.Close()
-	return ReadAll(file)
+	return ReadAllAsTerm(file)
 }
 
 func asFileString(t Term) (string, error) {

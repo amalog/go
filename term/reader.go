@@ -31,9 +31,8 @@ func NewReader(r io.Reader) *Reader {
 	return self
 }
 
-// ReadAllAsTerm reads all content as a single, root term.  The term's name is
-// "amalog".  All terms read from the content are in its db.
-func ReadAllAsTerm(r io.Reader) (Term, error) {
+// ReadAllAsTerms reads all terms.
+func ReadAllAsTerms(r io.Reader) ([]Term, error) {
 	reader := NewReader(r)
 	terms := make([]Term, 0)
 	for {
@@ -45,6 +44,16 @@ func ReadAllAsTerm(r io.Reader) (Term, error) {
 			return nil, err
 		}
 		terms = append(terms, t)
+	}
+	return terms, nil
+}
+
+// ReadAllAsTerm reads all content as a single, root term.  The term's name is
+// "amalog".  All terms read from the content are in its db.
+func ReadAllAsTerm(r io.Reader) (Term, error) {
+	terms, err := ReadAllAsTerms(r)
+	if err != nil {
+		return nil, err
 	}
 
 	name, err := NewAtom("amalog")
@@ -66,20 +75,7 @@ func ReadFileAsTerms(path string) ([]Term, error) {
 	}
 	defer file.Close()
 
-	reader := NewReader(file)
-	terms := make([]Term, 0)
-	for {
-		t, err := reader.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		terms = append(terms, t)
-	}
-
-	return terms, nil
+	return ReadAllAsTerms(file)
 }
 
 // ReadDirectoryAsTerm reads all files in a directory as a single, root term.
