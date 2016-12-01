@@ -4,6 +4,10 @@ import (
 	"bufio"
 	"errors"
 	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/amalog/go/scanner"
 )
@@ -41,6 +45,66 @@ func ReadAll(r io.Reader) (Term, error) {
 			return nil, err
 		}
 		terms = append(terms, t)
+	}
+
+	name, err := NewAtom("amalog")
+	if err != nil {
+		panic(err) // "amalog" should always be a valid atom
+	}
+	t := &Struct{
+		Name: name,
+		Data: NewDb(terms),
+	}
+	return t, nil
+}
+
+// ReadFileAsTerms reads all terms from a single file.
+func ReadFileAsTerms(path string) ([]Term, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	reader := NewReader(file)
+	terms := make([]Term, 0)
+	for {
+		t, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		terms = append(terms, t)
+	}
+
+	return terms, nil
+}
+
+// ReadDirectoryAsTerm reads all files in a directory as a single, root term.
+// The term's name is "amalog".  All terms read from the content are in its db.
+// The order in which files are processed is undefined.
+func ReadDirectoryAsTerm(dir string) (Term, error) {
+	terms := make([]Term, 0)
+
+	entries, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		if !strings.HasSuffix(entry.Name(), ".ama") {
+			continue
+		}
+		p := filepath.Join(dir, entry.Name())
+		ts, err := ReadFileAsTerms(p)
+		if err != nil {
+			return nil, err
+		}
+		terms = append(terms, ts...)
 	}
 
 	name, err := NewAtom("amalog")

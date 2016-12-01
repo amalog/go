@@ -194,12 +194,23 @@ func loadWorker(
 		case <-doneCh:
 			return
 		case job := <-jobsCh:
-			_ = job
-			resultsCh <- &loadResult{
-				name:         job.name,
-				t:            nil,
-				dependencies: []*dependency{},
+			r := &loadResult{
+				name: job.name,
+				err:  fmt.Errorf("can't find module %s in path: %s", job.name, path),
 			}
+			for _, p := range path {
+				candidate := filepath.Join(p, job.name)
+				if stat, err := os.Stat(candidate); err != nil || !stat.IsDir() {
+					continue
+				}
+
+				r.t, r.err = term.ReadDirectoryAsTerm(candidate)
+				if r.err == nil {
+					r.dependencies, r.err = dependencies(r.t)
+				}
+				break
+			}
+			resultsCh <- r
 		}
 	}
 }
