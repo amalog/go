@@ -98,7 +98,7 @@ func (ama *Amalog) CmdFormat(filename string) int {
 	}
 
 	// read and output terms
-	t, err := term.ReadAll(file)
+	t, err := term.ReadAllAsTerm(file)
 	if err != nil {
 		fmt.Fprintf(ama.Err, "read: %s", err)
 		return 1

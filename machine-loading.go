@@ -17,7 +17,7 @@ func (m *Machine) LoadRoot(filename string) error {
 	if err != nil {
 		return err
 	}
-	m.root, err = term.ReadAll(file)
+	m.root, err = term.ReadAllAsTerm(file)
 	if err != nil {
 		return err
 	}

@@ -31,9 +31,9 @@ func NewReader(r io.Reader) *Reader {
 	return self
 }
 
-// ReadAll reads all content as a single, root term.  The term's name is
+// ReadAllAsTerm reads all content as a single, root term.  The term's name is
 // "amalog".  All terms read from the content are in its db.
-func ReadAll(r io.Reader) (Term, error) {
+func ReadAllAsTerm(r io.Reader) (Term, error) {
 	reader := NewReader(r)
 	terms := make([]Term, 0)
 	for {
