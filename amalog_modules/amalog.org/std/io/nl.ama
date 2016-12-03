@@ -1,0 +1,18 @@
+use("amalog.org/std/env", Env)
+
+about(nl) {
+    summary("prints a single newline on standard output")
+    io
+}
+nl {
+    Env.stdout(Stdout)
+    nl(Stdout)
+}
+
+about(nl(Out)) {
+    summary("prints a single newline on an output")
+    io
+}
+nl(Out) {
+    # TODO somehow output a single '\n' character
+}

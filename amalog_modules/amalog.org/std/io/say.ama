@@ -1,0 +1,8 @@
+about(say(Message)) {
+    summary("Print a message to stdout with a trailing newline")
+    io
+}
+say(Message) {
+    print(Message)
+    nl
+}

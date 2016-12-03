@@ -1,0 +1,7 @@
+about(stdout(Stdout)) {
+    summary("unifies Stdout with a writer for standard output")
+}
+stdout(Stdout) {
+    # TODO somehow fetch a term representing stdout which implements
+    # TODO a writer interface
+}

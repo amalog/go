@@ -1,0 +1,18 @@
+use("amalog.org/std/env", Env)
+
+about(print(Message)) {
+    summary("prints Message on standard output")
+    io
+}
+print(Message) {
+    Env.stdout(Stdout)
+    fprint(Stdout,Message)
+}
+
+about(fprint(Out,Message)) {
+    summary("prints Message on an output")
+    io
+}
+fprint(Out,Message) {
+    # TODO somehow write Message to Out
+}
