@@ -58,7 +58,7 @@ func (m *Machine) modulePath(src string) ([]string, error) {
 	paths := make([]string, 0)
 	tried := make(map[string]bool)
 	for _, p := range starts {
-		for {
+		for !tried[p] {
 			tried[p] = true
 			candidate := filepath.Join(p, "amalog_modules")
 			if stat, err := os.Stat(candidate); err == nil && stat.IsDir() {
@@ -68,9 +68,6 @@ func (m *Machine) modulePath(src string) ([]string, error) {
 			}
 
 			p = filepath.Dir(p)
-			if tried[p] {
-				break
-			}
 		}
 	}
 
