@@ -208,6 +208,7 @@ func loadWorker(
 				if r.err == nil {
 					r.dependencies, r.err = dependencies(r.t)
 				}
+				job.variable.Value = r.t
 				break
 			}
 			resultsCh <- r
