@@ -84,8 +84,11 @@ func (ama *Amalog) CmdRun(filename string) int {
 		fmt.Fprintf(ama.Err, "%s\n", err)
 		return 1
 	}
-	result := m.Call("main", World)
-	_ = result
+	ok, _ := m.Once("main", World).Next(nil)
+	if !ok {
+		fmt.Fprintf(ama.Err, "main/0 failed")
+		return 1
+	}
 	return 0
 }
 
