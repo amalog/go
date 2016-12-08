@@ -5,9 +5,9 @@ hello, good_bye,
 
 use("amalog.org/std/io",Io),
 
-Io.say(W,"Hello, world!"),
+Io.say("Hello, world!"),
 
-main(W) { hi(W), },
+main { hi, },
 
 foo() { bar() { baz, bye, }, },
 

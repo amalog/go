@@ -1,5 +1,5 @@
 use("amalog.org/std/io", Io)
 
-main(W) {
-    Io.printf(W, "Hello, world!\n")
+main {
+    Io.printf("Hello, world!\n")
 }
