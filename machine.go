@@ -24,7 +24,10 @@ func (m *Machine) Call(name string, args ...term.Term) Goal {
 }
 
 func (m *Machine) CallTerm(goal term.Term) Goal {
-	return &disjunction{goal}
+	return &disjunction{
+		root: m.root,
+		goal: goal,
+	}
 }
 
 func (m *Machine) Once(name string, args ...term.Term) Goal {
