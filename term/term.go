@@ -1,6 +1,7 @@
 package term // import "github.com/amalog/go/term"
 
 import (
+	"fmt"
 	"io"
 	"math/big"
 	"reflect"
@@ -77,4 +78,12 @@ func Clauses(t Term) []Term {
 		return []Term(s.Data)
 	}
 	return []Term{}
+}
+
+// Body returns the term's Db, if it has one.
+func Body(t Term) (Db, error) {
+	if s, ok := t.(*Struct); ok {
+		return s.Data, nil
+	}
+	return nil, fmt.Errorf("term has no body: %s", t)
 }

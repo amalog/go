@@ -24,8 +24,12 @@ func (m *Machine) Call(name string, args ...term.Term) Goal {
 }
 
 func (m *Machine) CallTerm(goal term.Term) Goal {
+	db, err := term.Body(m.root)
+	if err != nil {
+		panic("raise condition if root has no db?")
+	}
 	return &disjunction{
-		root: m.root,
+		db:   db,
 		goal: goal,
 	}
 }

@@ -14,6 +14,6 @@ func unify(X, Y term.Term) Goal {
 	return nil
 }
 
-func Unify(c Context, x, y term.Term) (bool, bool) {
-	return false, false
+func Unify(c Context, x, y term.Term) bool {
+	return true
 }
